@@ -1,7 +1,6 @@
 import uuid
 
-from django.contrib.auth.base_user import AbstractBaseUser
-from django.contrib.auth.models import PermissionsMixin
+from django.contrib.auth.models import PermissionsMixin, AbstractUser
 from django.core.validators import validate_email
 from django.db import models
 from django.db.models import TextChoices
@@ -18,18 +17,18 @@ class UserRoles(TextChoices):
     ADMIN = 'AD', _('Admin')
 
 
-class CustomUser(AbstractBaseUser, PermissionsMixin):
+class CustomUser(AbstractUser):
     """Custom user model with roles and email address is the unique identifier."""
+    username = None
+    first_name = None
+    last_name = None
+
     uid = models.UUIDField(unique=True, editable=False, default=uuid.uuid4, verbose_name='Public identifier')
     full_name = models.CharField(max_length=255)
     email = models.EmailField(unique=True, validators=[validate_email])
     role = models.CharField(max_length=2, choices=UserRoles.choices)
-    date_joined = models.DateTimeField(auto_now_add=True)
-    is_active = models.BooleanField(default=True)
-    is_deleted = models.BooleanField(default=False)
     created_date = models.DateTimeField(default=timezone.now)
     modified_date = models.DateTimeField(default=timezone.now)
-    is_staff = models.BooleanField(default=False,)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['full_name']
@@ -42,8 +41,3 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     class Meta:
         verbose_name = _('user')
         verbose_name_plural = _('users')
-        permissions = (
-            ('create_admin', 'Create Admin'),
-            ('create_instructor', 'Create Instructor'),
-            ('create_student', 'Create Student'),
-        )
