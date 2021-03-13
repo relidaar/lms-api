@@ -144,3 +144,7 @@ REST_FRAMEWORK = {
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 SITE_ID = 1
+
+REST_AUTH_SERIALIZERS = {'LOGIN_SERIALIZER': 'accounts.serializers.CustomLoginSerializer'}
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_REQUIRED = True
