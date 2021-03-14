@@ -254,3 +254,59 @@ class CreateUserTests(TestCase):
         self.client.post(self.login_url, user_login_data)
         response = self.client.post(self.create_user_url, data=self.user_to_create, content_type='application/json')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+
+class UpdateUserTests(TestCase):
+    """Test module for user CRUD views."""
+    urlpatterns = test_urlpatterns
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            full_name='Jane Doe',
+            email=user_login_data['email'],
+            password=user_login_data['password'],
+            role=UserRoles.STUDENT,
+        )
+
+        self.admin = User.objects.create_superuser(
+            full_name='John Doe',
+            email=admin_login_data['email'],
+            password=admin_login_data['password'],
+        )
+
+        self.updated_details = {
+            'full_name': 'Jyll Doe',
+            'email': 'test2@test.com',
+        }
+
+        self.login_url = reverse('rest_login')
+
+    def test_valid_update_account_details(self):
+        """Test if user can valid update account details."""
+        self.client.post(self.login_url, user_login_data)
+        response = self.client.put(
+            reverse('update_user', kwargs={'uuid': self.user.pk}),
+            data=self.updated_details,
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_invalid_update_account_details(self):
+        """Test if user can invalid update account details."""
+        updated_details = {
+            'full_name': '',
+            'email': 'test2@test.com',
+        }
+        self.client.post(self.login_url, user_login_data)
+        response = self.client.put(
+            reverse('update_user', kwargs={'uuid': self.user.pk}),
+            data=updated_details,
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_update_another_account_details(self):
+        """Test if user can update another account details."""
+        self.client.post(self.login_url, user_login_data)
+        response = self.client.put(reverse('update_user', kwargs={'uuid': self.admin.uuid}))
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
