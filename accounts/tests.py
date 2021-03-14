@@ -197,3 +197,60 @@ class GetSingleUserTests(TestCase):
         response = self.client.get(reverse('get_user', kwargs={'uuid': self.admin.uuid}))
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
+
+class CreateUserTests(TestCase):
+    """Test module for user CRUD views."""
+    urlpatterns = test_urlpatterns
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            full_name='Jane Doe',
+            email=user_login_data['email'],
+            password=user_login_data['password'],
+            role=UserRoles.STUDENT,
+        )
+
+        self.admin = User.objects.create_superuser(
+            full_name='John Doe',
+            email=admin_login_data['email'],
+            password=admin_login_data['password'],
+        )
+
+        self.user_to_create = {
+            'full_name': 'Jack Doe',
+            'email': 'test2@test.com',
+            'password': 'test',
+            'role': 'IN'
+        }
+
+        self.login_url = reverse('rest_login')
+        self.create_user_url = reverse('create_user')
+
+    def test_create_valid_user(self):
+        """Test if admin can create valid user."""
+        self.client.post(self.login_url, admin_login_data)
+        response = self.client.post(self.create_user_url, data=self.user_to_create, content_type='application/json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_create_invalid_user(self):
+        """Test if admin can create invalid user."""
+        data = {
+            'full_name': '',
+            'email': 'test2@test.com',
+            'password': '',
+            'role': 'IN'
+        }
+        self.client.post(self.login_url, admin_login_data)
+        response = self.client.post(self.create_user_url, data=data, content_type='application/json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_user_not_authorized(self):
+        """Test if not authorized user can create new user."""
+        response = self.client.post(self.create_user_url, data=self.user_to_create, content_type='application/json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_create_user_not_authenticated(self):
+        """Test if not authenticated can create new user."""
+        self.client.post(self.login_url, user_login_data)
+        response = self.client.post(self.create_user_url, data=self.user_to_create, content_type='application/json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
