@@ -7,9 +7,10 @@ from accounts.models import CustomUser, UserRoles
 
 class CustomUserTests(APITestCase, URLPatternsTestCase):
     """Test module for CustomUser."""
-
     urlpatterns = [
-        path('api/accounts/', include('accounts.urls')),
+        path('api/', include([
+            path('users/', include('accounts.urls')),
+        ])),
     ]
 
     def setUp(self):
@@ -28,6 +29,7 @@ class CustomUserTests(APITestCase, URLPatternsTestCase):
         )
 
         self.login_url = reverse('rest_login')
+        self.logout_url = reverse('rest_logout')
 
     def test_login(self):
         """Test if a user can login and get a JWT response token."""
@@ -64,3 +66,28 @@ class CustomUserTests(APITestCase, URLPatternsTestCase):
         }
         response = self.client.post(self.login_url, data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_logout(self):
+        """Test if a user can logout."""
+        data = {
+            'email': 'test1@test.com',
+            'password': 'test',
+        }
+        response = self.client.post(self.login_url, data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        response = self.client.post(self.logout_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_admin_logout(self):
+        """Test if an admin can logout."""
+        data = {
+            'email': 'admin@test.com',
+            'password': 'admin',
+        }
+        response = self.client.post(self.login_url, data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        response = self.client.post(self.logout_url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
