@@ -289,7 +289,7 @@ class UpdateUserTests(TestCase):
             data=self.updated_details,
             content_type='application/json'
         )
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_invalid_update_account_details(self):
         """Test if user can invalid update account details."""

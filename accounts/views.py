@@ -3,7 +3,7 @@ from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView,
 from rest_framework.permissions import IsAuthenticated
 
 from accounts.models import UserRoles
-from accounts.serializers import UserSerializer
+from accounts.serializers import UserSerializer, UserUpdateSerializer
 
 
 class IsAdmin(IsAuthenticated):
@@ -41,4 +41,7 @@ class UserCreateAPIView(CreateAPIView):
 
 
 class UserUpdateAPIView(UpdateAPIView):
-    pass
+    permission_classes = [IsAccountOwner]
+    queryset = get_user_model().objects.all()
+    serializer_class = UserUpdateSerializer
+    lookup_field = 'uuid'

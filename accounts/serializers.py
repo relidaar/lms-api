@@ -57,8 +57,3 @@ class UserUpdateSerializer(ModelSerializer):
                 'read_only': True,
             },
         }
-
-    def update(self, instance, validated_data):
-        instance.email = validated_data.get('email', instance.email)
-        instance.full_name = validated_data.get('full_name', instance.full_name)
-        return instance
