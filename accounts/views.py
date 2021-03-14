@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model
-from rest_framework.generics import ListAPIView, RetrieveAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView
 from rest_framework.permissions import IsAuthenticated
 
 from accounts.models import UserRoles
@@ -26,3 +26,9 @@ class UserDetailsAPIView(RetrieveAPIView):
 
     def get_object(self):
         return get_user_model().objects.get(uuid=self.kwargs.get('uuid'))
+
+
+class UserCreateAPIView(CreateAPIView):
+    permission_classes = (IsAdmin,)
+    queryset = get_user_model().objects.all()
+    serializer_class = UserSerializer
