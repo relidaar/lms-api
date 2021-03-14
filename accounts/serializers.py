@@ -22,9 +22,9 @@ class UserSerializer(ModelSerializer):
     """Custom serializer for user model."""
     class Meta:
         model = get_user_model()
-        fields = ('uid', 'full_name', 'email', 'password', 'role')
+        fields = ('uuid', 'full_name', 'email', 'password', 'role')
         extra_kwargs = {
-            'uid': {
+            'uuid': {
                 'read_only': True,
             },
             'password': {
@@ -51,9 +51,9 @@ class UserUpdateSerializer(ModelSerializer):
     """Custom update serializer for user model."""
     class Meta:
         model = get_user_model()
-        fields = ('uid', 'full_name', 'email',)
+        fields = ('uuid', 'full_name', 'email',)
         extra_kwargs = {
-            'uid': {
+            'uuid': {
                 'read_only': True,
             },
         }

@@ -23,7 +23,7 @@ class CustomUser(AbstractUser):
     first_name = None
     last_name = None
 
-    uid = models.UUIDField(unique=True, editable=False, default=uuid.uuid4, verbose_name='Public identifier')
+    uuid = models.UUIDField(unique=True, editable=False, default=uuid.uuid4, verbose_name='Public identifier')
     full_name = models.CharField(max_length=255)
     email = models.EmailField(unique=True, validators=[validate_email])
     role = models.CharField(max_length=2, choices=UserRoles.choices)
@@ -36,7 +36,7 @@ class CustomUser(AbstractUser):
     objects = CustomUserManager()
 
     def __str__(self):
-        return f'{_("UID")}: {self.uid} | {_("Name")}:  {_(self.full_name)}'
+        return f'{_("Name")}: {_(self.full_name)} | {_("Email")}: {self.email}'
 
     class Meta:
         verbose_name = _('user')
