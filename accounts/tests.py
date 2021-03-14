@@ -285,7 +285,7 @@ class UpdateUserTests(TestCase):
         """Test if user can valid update account details."""
         self.client.post(self.login_url, user_login_data)
         response = self.client.put(
-            reverse('update_user', kwargs={'uuid': self.user.pk}),
+            reverse('update_user', kwargs={'uuid': self.user.uuid}),
             data=self.updated_details,
             content_type='application/json'
         )
@@ -299,11 +299,11 @@ class UpdateUserTests(TestCase):
         }
         self.client.post(self.login_url, user_login_data)
         response = self.client.put(
-            reverse('update_user', kwargs={'uuid': self.user.pk}),
+            reverse('update_user', kwargs={'uuid': self.user.uuid}),
             data=updated_details,
             content_type='application/json'
         )
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_update_another_account_details(self):
         """Test if user can update another account details."""
