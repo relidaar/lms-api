@@ -3,8 +3,6 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 
-from accounts.models import UserRoles
-
 
 class CustomLoginSerializer(LoginSerializer):
     """Custom login serializer for dj-rest-auth."""
@@ -22,7 +20,7 @@ class UserSerializer(ModelSerializer):
     """Custom serializer for user model."""
     class Meta:
         model = get_user_model()
-        fields = ('uuid', 'full_name', 'email', 'password', 'role')
+        fields = ('uuid', 'full_name', 'email', 'password')
         extra_kwargs = {
             'uuid': {
                 'read_only': True,
@@ -34,15 +32,8 @@ class UserSerializer(ModelSerializer):
 
     def create(self, validated_data):
         password = validated_data.pop('password')
-        role = validated_data.pop('role')
         user = get_user_model()(**validated_data)
         user.set_password(password)
-        user.role = role
-
-        if role is UserRoles.ADMIN:
-            user.is_staff = True
-            user.is_superuser = True
-
         user.save()
         return user
 

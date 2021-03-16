@@ -22,9 +22,9 @@ class CustomUserManager(BaseUserManager):
             raise ValueError(_("The email must be set"))
         if not password:
             raise ValueError(_("The password must be set"))
-        if not extra_fields.get('role'):
-            raise ValueError('User must have a role')
 
+        extra_fields.setdefault('is_superuser', False)
+        extra_fields.setdefault('is_active', True)
         email = self.normalize_email(email)
         user = self.model(email=email, full_name=full_name, **extra_fields)
         user.set_password(password)
@@ -42,10 +42,6 @@ class CustomUserManager(BaseUserManager):
 
         Returns: created superuser of type CustomUser
         """
-        from accounts.models import UserRoles
-
-        extra_fields.setdefault('is_active', True)
-        extra_fields.setdefault('role', UserRoles.ADMIN)
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
 
@@ -53,6 +49,4 @@ class CustomUserManager(BaseUserManager):
             raise ValueError('Superuser must have is_staff=True.')
         if extra_fields.get('is_superuser') is not True:
             raise ValueError('Superuser must have is_superuser=True.')
-        if extra_fields.get('role') != UserRoles.ADMIN:
-            raise ValueError('Superuser must have role of Global Admin')
         return self.create_user(full_name, email, password, **extra_fields)
