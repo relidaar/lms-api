@@ -20,7 +20,7 @@ class UserCreateAPIView(CreateAPIView):
     serializer_class = UserSerializer
 
 
-class UserUpdateAPIView(UpdateAPIView):
+class UserUpdateAPIView(UpdateAPIView, RetrieveAPIView):
     queryset = get_user_model().objects.all()
     serializer_class = UserUpdateSerializer
     lookup_field = 'uuid'
