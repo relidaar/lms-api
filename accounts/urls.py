@@ -1,11 +1,12 @@
 from django.urls import include, path
+from rest_framework.routers import SimpleRouter
 
-from accounts.views import UserListAPIView, UserDetailsAPIView, UserCreateAPIView, UserUpdateAPIView
+from accounts.views import UserViewSet
+
+router = SimpleRouter()
+router.register('users', UserViewSet)
 
 urlpatterns = [
     path('', include('dj_rest_auth.urls')),
-    path('', UserListAPIView.as_view(), name='users_list'),
-    path('add/', UserCreateAPIView.as_view(), name='create_user'),
-    path('<uuid:uuid>/', UserDetailsAPIView.as_view(), name='get_user'),
-    path('<uuid:uuid>/edit/', UserUpdateAPIView.as_view(), name='update_user'),
+    path('', include(router.urls)),
 ]

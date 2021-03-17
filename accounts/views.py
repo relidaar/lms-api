@@ -1,26 +1,23 @@
 from django.contrib.auth import get_user_model
-from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView, UpdateAPIView
+from rest_framework.viewsets import ModelViewSet
 
 from accounts.serializers import UserSerializer, UserUpdateSerializer
 
 
-class UserListAPIView(ListAPIView):
-    queryset = get_user_model().objects.all()
-    serializer_class = UserSerializer
+class MultiSerializerViewSet(ModelViewSet):
+    serializers = {
+        'default': None,
+    }
+
+    def get_serializer_class(self):
+        return self.serializers.get(self.action, self.serializers['default'])
 
 
-class UserDetailsAPIView(RetrieveAPIView):
+class UserViewSet(MultiSerializerViewSet):
     queryset = get_user_model().objects.all()
     serializer_class = UserSerializer
     lookup_field = 'uuid'
-
-
-class UserCreateAPIView(CreateAPIView):
-    queryset = get_user_model().objects.all()
-    serializer_class = UserSerializer
-
-
-class UserUpdateAPIView(UpdateAPIView, RetrieveAPIView):
-    queryset = get_user_model().objects.all()
-    serializer_class = UserUpdateSerializer
-    lookup_field = 'uuid'
+    serializers = {
+        'default': UserSerializer,
+        'update': UserUpdateSerializer,
+    }
