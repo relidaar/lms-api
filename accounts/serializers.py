@@ -1,5 +1,6 @@
 from dj_rest_auth.serializers import LoginSerializer
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group, Permission
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 
@@ -18,6 +19,7 @@ class CustomLoginSerializer(LoginSerializer):
 
 class UserSerializer(ModelSerializer):
     """Custom serializer for user model."""
+
     class Meta:
         model = get_user_model()
         fields = ('uuid', 'full_name', 'email', 'password', 'is_staff', 'is_active', 'groups',)
@@ -36,6 +38,7 @@ class UserSerializer(ModelSerializer):
 
 class UserUpdateSerializer(ModelSerializer):
     """Custom update serializer for user model."""
+
     class Meta:
         model = get_user_model()
         fields = ('uuid', 'full_name', 'email', 'groups',)
@@ -46,3 +49,19 @@ class UserUpdateSerializer(ModelSerializer):
         instance.groups.set(validated_data.get('groups', instance.groups))
         instance.save()
         return instance
+
+
+class GroupSerializer(ModelSerializer):
+    """Custom serializer for group model."""
+
+    class Meta:
+        model = Group
+        fields = '__all__'
+
+
+class PermissionSerializer(ModelSerializer):
+    """Custom serializer for permission model."""
+
+    class Meta:
+        model = Permission
+        fields = '__all__'
