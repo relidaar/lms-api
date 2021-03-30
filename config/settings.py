@@ -135,7 +135,8 @@ STATIC_URL = '/static/'
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
-        'accounts.permissions.CustomDjangoModelPermissions',
+        'config.permissions.CustomDjangoModelPermissions',
+        'config.permissions.CustomDjangoObjectPermissions',
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
