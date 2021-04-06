@@ -4,6 +4,7 @@ from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin, AbstractUser, Group
 from django.core.validators import validate_email
 from django.db import models
+from django.db.models import CASCADE
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
@@ -44,3 +45,32 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     class Meta:
         verbose_name = _('user')
         verbose_name_plural = _('users')
+
+
+class UserProfile(models.Model):
+    """Basic model for user profiles."""
+    uuid = models.UUIDField(unique=True, editable=False, default=uuid.uuid4, verbose_name='Public identifier')
+    user = models.OneToOneField(CustomUser, on_delete=CASCADE)
+    created_date = models.DateTimeField(default=timezone.now, editable=False)
+    modified_date = models.DateTimeField(default=timezone.now, editable=False)
+
+    def __str__(self):
+        return self.user.__str__()
+
+    class Meta:
+        abstract = True
+
+
+class InstructorProfile(UserProfile):
+    """Model for instructor profiles."""
+    class Meta:
+        verbose_name = _('instructor')
+        verbose_name_plural = _('instructors')
+
+
+class StudentProfile(UserProfile):
+    """Model for student profiles."""
+    class Meta:
+        verbose_name = _('student')
+        verbose_name_plural = _('students')
+
