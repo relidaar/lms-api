@@ -4,6 +4,8 @@ from django.contrib.auth.models import Group, Permission
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 
+from accounts.models import StudentProfile, InstructorProfile
+
 
 class CustomLoginSerializer(LoginSerializer):
     """Custom login serializer for dj-rest-auth."""
@@ -64,4 +66,20 @@ class PermissionSerializer(ModelSerializer):
 
     class Meta:
         model = Permission
+        fields = '__all__'
+
+
+class StudentProfileSerializer(ModelSerializer):
+    """Custom serializer for student profile model."""
+
+    class Meta:
+        model = StudentProfile
+        fields = '__all__'
+
+
+class InstructorProfileSerializer(ModelSerializer):
+    """Custom serializer for instructor profile model."""
+
+    class Meta:
+        model = InstructorProfile
         fields = '__all__'
