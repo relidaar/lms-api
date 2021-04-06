@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'dj_rest_auth',
 
     'accounts.apps.AccountsConfig',
+    'lms_core.apps.LmsCoreConfig',
 ]
 
 MIDDLEWARE = [

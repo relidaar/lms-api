@@ -20,6 +20,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include([
         path('accounts/', include('accounts.urls')),
+        path('lms-core/', include('lms_core.urls')),
     ])),
-
 ]
