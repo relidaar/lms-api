@@ -40,7 +40,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     objects = CustomUserManager()
 
     def __str__(self):
-        return f'{_("Name")}: {_(self.full_name)} | {_("Email")}: {self.email}'
+        return f'{self.full_name} ({self.email})'
 
     class Meta:
         verbose_name = _('user')

@@ -19,33 +19,38 @@ class CourseAdmin(admin.ModelAdmin):
 
 @admin.register(Timetable)
 class TimetableAdmin(admin.ModelAdmin):
-    list_display = ('get_course_code', 'uuid',)
-    search_fields = ('get_course_code', 'uuid',)
+    list_display = ('code', 'title', 'get_course_code', 'uuid',)
+    search_fields = ('code', 'title', 'get_course_code', 'uuid',)
 
     def get_course_code(self, obj):
         return obj.course.code
-    get_course_code.short_description = 'Course Code'
-    get_course_code.admin_order_field = 'code'
+    get_course_code.short_description = 'Course'
+    get_course_code.admin_filter_field = 'code'
 
 
 class EventAdmin(admin.ModelAdmin):
-    list_display = ('title', 'event_type', 'get_instructor', 'uuid',)
-    search_fields = ('title', 'event_type', 'get_instructor', 'uuid',)
+    list_display = ('title', 'event_type', 'get_course_code', 'get_instructor', 'uuid',)
+    search_fields = ('title', 'event_type', 'get_course_code', 'get_instructor', 'uuid',)
     list_filter = ('event_type',)
 
+    def get_course_code(self, obj):
+        return obj.timetable.course.code
+    get_course_code.short_description = 'Course'
+    get_course_code.admin_filter_field = 'code'
+
     def get_instructor(self, obj):
-        return obj.instructor.full_name
+        return obj.instructor.user.full_name
     get_instructor.short_description = 'Instructor'
     get_instructor.admin_filter_field = 'full_name'
 
 
 @admin.register(PeriodicEvent)
-class PeriodicEventAdmin(admin.ModelAdmin):
+class PeriodicEventAdmin(EventAdmin):
     pass
 
 
 @admin.register(NonPeriodicEvent)
-class NonPeriodicEventAdmin(admin.ModelAdmin):
+class NonPeriodicEventAdmin(EventAdmin):
     pass
 
 
@@ -54,4 +59,3 @@ class EventTypeAdmin(admin.ModelAdmin):
     list_display = ('title', 'uuid',)
     search_fields = ('title', 'uuid',)
     ordering = ('title',)
-

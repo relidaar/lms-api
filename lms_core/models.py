@@ -11,29 +11,34 @@ class StudentGroup(models.Model):
     code = models.CharField(max_length=10, unique=True)
     students = models.ManyToManyField(StudentProfile)
 
+    def __str__(self):
+        return self.code
+
 
 class Course(models.Model):
     """Represent an academic course."""
     uuid = models.UUIDField(unique=True, editable=False, default=uuid.uuid4, verbose_name='Public identifier')
     code = models.CharField(max_length=10, unique=True)
     title = models.CharField(max_length=255)
-    syllabus = models.TextField()
+    syllabus = models.TextField(blank=True)
     instructors = models.ManyToManyField(InstructorProfile, related_name='instructors')
     student_groups = models.ManyToManyField(StudentGroup)
 
     def __str__(self):
-        return f'Course {self.code} - {self.title}'
+        return f'{self.code} - {self.title}'
 
 
 class Timetable(models.Model):
     """Represent an event timetable related to specific course."""
     uuid = models.UUIDField(unique=True, editable=False, default=uuid.uuid4, verbose_name='Public identifier')
+    code = models.CharField(max_length=10, unique=True)
+    title = models.CharField(max_length=255, blank=True)
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='timetables')
     start_date = models.DateField(verbose_name='Course start date')
     end_date = models.DateField(verbose_name='Course end date')
 
     def __str__(self):
-        return f'Timetable for course {self.course.code}'
+        return f'{self.title} ({self.course.code} course)'
 
 
 class EventType(models.Model):
@@ -49,7 +54,7 @@ class Event(models.Model):
     """Basic model for timetable events."""
     uuid = models.UUIDField(unique=True, editable=False, default=uuid.uuid4, verbose_name='Public identifier')
     title = models.CharField(max_length=255)
-    description = models.TextField()
+    description = models.TextField(blank=True)
     event_type = models.OneToOneField(EventType, on_delete=models.CASCADE)
     start_time = models.TimeField(verbose_name='Event start time')
     end_time = models.TimeField(verbose_name='Event end time')
@@ -58,7 +63,7 @@ class Event(models.Model):
     timetable = models.ForeignKey(Timetable, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f'Event created by {self.instructor}'
+        return f'{self.title} ({self.event_type.title})'
 
     class Meta:
         abstract = True
