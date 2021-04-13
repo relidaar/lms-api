@@ -7,8 +7,9 @@ from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
 from accounts.models import StudentProfile, InstructorProfile
-from lms_core.models import StudentGroup, Course, Timetable, EventType
-from lms_core.serializers import StudentGroupSerializer, CourseSerializer, TimetableSerializer, EventTypeSerializer
+from lms_core.models import StudentGroup, Course, Timetable, EventType, PeriodicEvent
+from lms_core.serializers import StudentGroupSerializer, CourseSerializer, TimetableSerializer, EventTypeSerializer, \
+    PeriodicEventSerializer
 
 User = get_user_model()
 
@@ -562,5 +563,190 @@ class EventTypeCrudTests(APITestCase):
 
     def test_delete_event_type_not_authenticated(self):
         """Test if not authenticated user can delete event type."""
+        response = self.client.delete(self.detail_url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+
+class PeriodicEventCrudTests(APITestCase):
+    """Test module for CRUD actions on periodic events."""
+
+    def setUp(self) -> None:
+        self.superuser_login_data = {
+            'email': 'superuser@test.com',
+            'password': 'test',
+        }
+
+        self.superuser = User.objects.create_superuser(
+            full_name='John Doe',
+            email=self.superuser_login_data['email'],
+            password=self.superuser_login_data['password'],
+        )
+
+        self.user1 = User.objects.create_user(
+            full_name='Jack Doe',
+            email='jack.doe@test.com',
+            password='test',
+        )
+
+        self.user2 = User.objects.create_user(
+            full_name='Jill Doe',
+            email='jill.doe@test.com',
+            password='test',
+        )
+
+        self.student = StudentProfile.objects.create(user=self.user1)
+        self.instructor = InstructorProfile.objects.create(user=self.user2)
+
+        self.student_group = StudentGroup.objects.create(code='group1')
+        self.student_group.students.add(self.student)
+
+        self.course = Course.objects.create(code='course1', title='Course 1')
+        self.course.instructors.add(self.instructor)
+        self.course.student_groups.add(self.student_group)
+
+        self.timetable = Timetable.objects.create(
+            code='tt1',
+            title='Timetable 1',
+            course=self.course,
+            start_date=datetime.now(),
+            end_date=datetime.now(),
+        )
+
+        self.event_type = EventType.objects.create(title='Event Type 1')
+
+        self.event = PeriodicEvent.objects.create(
+            title='Event 1',
+            event_type=self.event_type,
+            start_time=datetime.now().time(),
+            end_time=datetime.now().time(),
+            timetable=self.timetable,
+            weekday=PeriodicEvent.WeekDay.Monday,
+            repeat_type=PeriodicEvent.RepeatType.Weekly,
+            instructor=self.instructor,
+        )
+        self.event.students.add(self.student)
+
+        self.login_url = reverse('rest_login')
+        self.logout_url = reverse('rest_logout')
+        self.list_url = reverse('periodic-event-list')
+        self.detail_url = reverse('periodic-event-detail', kwargs={'uuid': self.event.uuid})
+
+    def test_get_all_periodic_events(self):
+        """Test if superuser can retrieve periodic events list."""
+        self.client.post(self.login_url, self.superuser_login_data)
+
+        event = PeriodicEvent.objects.create(
+            title='Event 2',
+            event_type=self.event_type,
+            start_time=datetime.now(),
+            end_time=datetime.now(),
+            timetable=self.timetable,
+            weekday=PeriodicEvent.WeekDay.Monday,
+            repeat_type=PeriodicEvent.RepeatType.Weekly,
+            instructor=self.instructor,
+        )
+        event.students.add(self.student)
+
+        response = self.client.get(self.list_url)
+        data = PeriodicEvent.objects.all()
+        serializer = PeriodicEventSerializer(data, many=True)
+
+        self.assertEqual(response.data, serializer.data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_get_all_periodic_events_not_authenticated(self):
+        """Test if not authenticated user can retrieve periodic events list."""
+        response = self.client.get(self.list_url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_get_valid_single_periodic_event(self):
+        """Test if superuser can retrieve valid periodic event details."""
+        self.client.post(self.login_url, self.superuser_login_data)
+        response = self.client.get(self.detail_url)
+        data = PeriodicEvent.objects.get(uuid=self.event.uuid)
+        serializer = PeriodicEventSerializer(data)
+
+        self.assertEqual(response.data, serializer.data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_get_single_periodic_event_not_authenticated(self):
+        """Test if not authenticated user can retrieve periodic event details."""
+        response = self.client.get(self.detail_url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_get_invalid_single_periodic_event(self):
+        """Test if superuser can retrieve invalid periodic event details."""
+        self.client.post(self.login_url, self.superuser_login_data)
+        response = self.client.get(reverse('periodic-event-detail', kwargs={'uuid': uuid4()}))
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_create_valid_periodic_event(self):
+        """Test if superuser can create valid periodic event."""
+        self.client.post(self.login_url, self.superuser_login_data)
+
+        data = {
+            'title': 'Event 2',
+            'event_type': self.event_type.pk,
+            'start_time': datetime.now().time(),
+            'end_time': datetime.now().time(),
+            'timetable': self.timetable.pk,
+            'weekday': PeriodicEvent.WeekDay.Monday,
+            'repeat_type': PeriodicEvent.RepeatType.Weekly,
+            'instructor': self.instructor.pk,
+            'students': [self.student.pk],
+        }
+        response = self.client.post(self.list_url, data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_create_invalid_periodic_event(self):
+        """Test if superuser can create invalid periodic event."""
+        self.client.post(self.login_url, self.superuser_login_data)
+        response = self.client.post(self.list_url)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_periodic_event_not_authenticated(self):
+        """Test if not authenticated user can create new periodic event."""
+        response = self.client.post(self.list_url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_valid_update_periodic_event_details(self):
+        """Test if superuser can valid update periodic event details."""
+        self.client.post(self.login_url, self.superuser_login_data)
+
+        data = {
+            'title': 'Event 2',
+            'event_type': self.event_type.pk,
+            'start_time': datetime.now().time(),
+            'end_time': datetime.now().time(),
+            'timetable': self.timetable.pk,
+            'weekday': PeriodicEvent.WeekDay.Monday,
+            'repeat_type': PeriodicEvent.RepeatType.Weekly,
+            'instructor': self.instructor.pk,
+            'students': [self.student.pk],
+        }
+        put_response = self.client.put(self.detail_url, data)
+        patch_response = self.client.patch(self.detail_url, {'code': 'tt5'})
+        self.assertEqual(put_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(patch_response.status_code, status.HTTP_200_OK)
+
+    def test_invalid_update_periodic_event_details(self):
+        """Test if superuser can invalid update periodic event details."""
+        self.client.post(self.login_url, self.superuser_login_data)
+        response = self.client.put(self.detail_url)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_update_periodic_event_details_not_authenticated(self):
+        """Test if not authenticated user can update periodic event details."""
+        response = self.client.put(self.detail_url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_delete_periodic_event(self):
+        """Test if superuser can delete periodic event."""
+        self.client.post(self.login_url, self.superuser_login_data)
+        response = self.client.delete(self.detail_url)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_delete_periodic_event_not_authenticated(self):
+        """Test if not authenticated user can delete periodic event."""
         response = self.client.delete(self.detail_url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
