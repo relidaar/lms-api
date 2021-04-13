@@ -1,3 +1,4 @@
+from datetime import datetime
 from uuid import uuid4
 
 from django.contrib.auth import get_user_model
@@ -6,8 +7,8 @@ from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
 from accounts.models import StudentProfile, InstructorProfile
-from lms_core.models import StudentGroup, Course
-from lms_core.serializers import StudentGroupSerializer, CourseSerializer
+from lms_core.models import StudentGroup, Course, Timetable
+from lms_core.serializers import StudentGroupSerializer, CourseSerializer, TimetableSerializer
 
 User = get_user_model()
 
@@ -54,8 +55,8 @@ class StudentGroupCrudTests(APITestCase):
         """Test if superuser can retrieve student groups list."""
         self.client.post(self.login_url, self.superuser_login_data)
 
-        self.student_group2 = StudentGroup.objects.create(code='group2')
-        self.student_group2.students.add(self.student2)
+        student_group2 = StudentGroup.objects.create(code='group2')
+        student_group2.students.add(self.student2)
 
         response = self.client.get(self.list_url)
         student_groups = StudentGroup.objects.all()
@@ -192,9 +193,9 @@ class CourseCrudTests(APITestCase):
         """Test if superuser can retrieve courses list."""
         self.client.post(self.login_url, self.superuser_login_data)
 
-        self.course2 = Course.objects.create(code='course2', title='Course 2')
-        self.course2.instructors.add(self.instructor)
-        self.course2.student_groups.add(self.student_group)
+        course2 = Course.objects.create(code='course2', title='Course 2')
+        course2.instructors.add(self.instructor)
+        course2.student_groups.add(self.student_group)
 
         response = self.client.get(self.list_url)
         data = Course.objects.all()
@@ -286,5 +287,163 @@ class CourseCrudTests(APITestCase):
 
     def test_delete_course_not_authenticated(self):
         """Test if not authenticated user can delete course."""
+        response = self.client.delete(self.detail_url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+
+class TimetableCrudTests(APITestCase):
+    """Test module for CRUD actions on timetables."""
+
+    def setUp(self) -> None:
+        self.superuser_login_data = {
+            'email': 'superuser@test.com',
+            'password': 'test',
+        }
+
+        self.superuser = User.objects.create_superuser(
+            full_name='John Doe',
+            email=self.superuser_login_data['email'],
+            password=self.superuser_login_data['password'],
+        )
+
+        self.user1 = User.objects.create_user(
+            full_name='Jack Doe',
+            email='jack.doe@test.com',
+            password='test',
+        )
+
+        self.user2 = User.objects.create_user(
+            full_name='Jill Doe',
+            email='jill.doe@test.com',
+            password='test',
+        )
+
+        self.student = StudentProfile.objects.create(user=self.user1)
+        self.instructor = InstructorProfile.objects.create(user=self.user2)
+
+        self.student_group = StudentGroup.objects.create(code='group1')
+        self.student_group.students.add(self.student)
+
+        self.course = Course.objects.create(code='course1', title='Course 1')
+        self.course.instructors.add(self.instructor)
+        self.course.student_groups.add(self.student_group)
+
+        self.timetable = Timetable.objects.create(
+            code='tt1',
+            title='Timetable 1',
+            course=self.course,
+            start_date=datetime.now(),
+            end_date=datetime.now(),
+        )
+
+        self.login_url = reverse('rest_login')
+        self.logout_url = reverse('rest_logout')
+        self.list_url = reverse('timetable-list')
+        self.detail_url = reverse('timetable-detail', kwargs={'uuid': self.timetable.uuid})
+
+    def test_get_all_timetables(self):
+        """Test if superuser can retrieve timetables list."""
+        self.client.post(self.login_url, self.superuser_login_data)
+
+        Timetable.objects.create(
+            code='tt2',
+            title='Timetable 2',
+            course=self.course,
+            start_date=datetime.now().date(),
+            end_date=datetime.now().date(),
+        )
+
+        response = self.client.get(self.list_url)
+        data = Timetable.objects.all()
+        serializer = TimetableSerializer(data, many=True)
+
+        self.assertEqual(response.data, serializer.data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_get_all_timetables_not_authenticated(self):
+        """Test if not authenticated user can retrieve timetables list."""
+        response = self.client.get(self.list_url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_get_valid_single_timetable(self):
+        """Test if superuser can retrieve valid timetable details."""
+        self.client.post(self.login_url, self.superuser_login_data)
+        response = self.client.get(self.detail_url)
+        data = Timetable.objects.get(uuid=self.timetable.uuid)
+        serializer = TimetableSerializer(data)
+
+        self.assertEqual(response.data, serializer.data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_get_single_timetable_not_authenticated(self):
+        """Test if not authenticated user can retrieve timetable details."""
+        response = self.client.get(self.detail_url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_get_invalid_single_timetable(self):
+        """Test if superuser can retrieve invalid timetable details."""
+        self.client.post(self.login_url, self.superuser_login_data)
+        response = self.client.get(reverse('timetable-detail', kwargs={'uuid': uuid4()}))
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_create_valid_timetable(self):
+        """Test if superuser can create valid timetable."""
+        self.client.post(self.login_url, self.superuser_login_data)
+
+        data = {
+            'code': 'tt2',
+            'title': 'Timetable 2',
+            'course': self.course.pk,
+            'start_date': datetime.now().date(),
+            'end_date': datetime.now().date(),
+        }
+        response = self.client.post(self.list_url, data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_create_invalid_timetable(self):
+        """Test if superuser can create invalid timetable."""
+        self.client.post(self.login_url, self.superuser_login_data)
+        response = self.client.post(self.list_url)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_timetable_not_authenticated(self):
+        """Test if not authenticated user can create new timetable."""
+        response = self.client.post(self.list_url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_valid_update_timetable_details(self):
+        """Test if superuser can valid update timetable details."""
+        self.client.post(self.login_url, self.superuser_login_data)
+        data = {
+            'code': 'tt2',
+            'title': 'Timetable 2',
+            'course': self.course.pk,
+            'start_date': datetime.now().date(),
+            'end_date': datetime.now().date(),
+        }
+        put_response = self.client.put(self.detail_url, data)
+        patch_response = self.client.patch(self.detail_url, {'code': 'tt5'})
+        self.assertEqual(put_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(patch_response.status_code, status.HTTP_200_OK)
+
+    def test_invalid_update_timetable_details(self):
+        """Test if superuser can invalid update timetable details."""
+        self.client.post(self.login_url, self.superuser_login_data)
+        response = self.client.put(self.detail_url)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_update_timetable_details_not_authenticated(self):
+        """Test if not authenticated user can update timetable details."""
+        response = self.client.put(self.detail_url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_delete_timetable(self):
+        """Test if superuser can delete timetable."""
+        self.client.post(self.login_url, self.superuser_login_data)
+        response = self.client.delete(self.detail_url)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_delete_timetable_not_authenticated(self):
+        """Test if not authenticated user can delete timetable."""
         response = self.client.delete(self.detail_url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
