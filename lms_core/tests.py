@@ -7,8 +7,8 @@ from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
 from accounts.models import StudentProfile, InstructorProfile
-from lms_core.models import StudentGroup, Course, Timetable
-from lms_core.serializers import StudentGroupSerializer, CourseSerializer, TimetableSerializer
+from lms_core.models import StudentGroup, Course, Timetable, EventType
+from lms_core.serializers import StudentGroupSerializer, CourseSerializer, TimetableSerializer, EventTypeSerializer
 
 User = get_user_model()
 
@@ -445,5 +445,122 @@ class TimetableCrudTests(APITestCase):
 
     def test_delete_timetable_not_authenticated(self):
         """Test if not authenticated user can delete timetable."""
+        response = self.client.delete(self.detail_url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+
+class EventTypeCrudTests(APITestCase):
+    """Test module for CRUD actions on event types."""
+
+    def setUp(self) -> None:
+        self.superuser_login_data = {
+            'email': 'superuser@test.com',
+            'password': 'test',
+        }
+
+        self.superuser = User.objects.create_superuser(
+            full_name='John Doe',
+            email=self.superuser_login_data['email'],
+            password=self.superuser_login_data['password'],
+        )
+
+        self.event_type = EventType.objects.create(title='Event 1')
+
+        self.login_url = reverse('rest_login')
+        self.logout_url = reverse('rest_logout')
+        self.list_url = reverse('event-type-list')
+        self.detail_url = reverse('event-type-detail', kwargs={'uuid': self.event_type.uuid})
+
+    def test_get_all_event_types(self):
+        """Test if superuser can retrieve event types list."""
+        self.client.post(self.login_url, self.superuser_login_data)
+
+        EventType.objects.create(title='Event 2')
+
+        response = self.client.get(self.list_url)
+        data = EventType.objects.all()
+        serializer = EventTypeSerializer(data, many=True)
+
+        self.assertEqual(response.data, serializer.data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_get_all_event_types_not_authenticated(self):
+        """Test if not authenticated user can retrieve event types list."""
+        response = self.client.get(self.list_url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_get_valid_single_event_type(self):
+        """Test if superuser can retrieve valid event type details."""
+        self.client.post(self.login_url, self.superuser_login_data)
+        response = self.client.get(self.detail_url)
+        data = EventType.objects.get(uuid=self.event_type.uuid)
+        serializer = EventTypeSerializer(data)
+
+        self.assertEqual(response.data, serializer.data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_get_single_event_type_not_authenticated(self):
+        """Test if not authenticated user can retrieve event type details."""
+        response = self.client.get(self.detail_url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_get_invalid_single_event_type(self):
+        """Test if superuser can retrieve invalid event type details."""
+        self.client.post(self.login_url, self.superuser_login_data)
+        response = self.client.get(reverse('event-type-detail', kwargs={'uuid': uuid4()}))
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_create_valid_event_type(self):
+        """Test if superuser can create valid event type."""
+        self.client.post(self.login_url, self.superuser_login_data)
+
+        data = {
+            'title': 'Event 2',
+        }
+        response = self.client.post(self.list_url, data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_create_invalid_event_type(self):
+        """Test if superuser can create invalid event type."""
+        self.client.post(self.login_url, self.superuser_login_data)
+        response = self.client.post(self.list_url)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_create_event_type_not_authenticated(self):
+        """Test if not authenticated user can create new event type."""
+        response = self.client.post(self.list_url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_valid_update_event_type_details(self):
+        """Test if superuser can valid update event type details."""
+        self.client.post(self.login_url, self.superuser_login_data)
+
+        data = {
+            'title': 'Event 2',
+        }
+        put_response = self.client.put(self.detail_url, data)
+        patch_response = self.client.patch(self.detail_url, {'title': 'Event 3'})
+        self.assertEqual(put_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(patch_response.status_code, status.HTTP_200_OK)
+
+    def test_invalid_update_event_type_details(self):
+        """Test if superuser can invalid update event type details."""
+        self.client.post(self.login_url, self.superuser_login_data)
+        response = self.client.put(self.detail_url)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_update_event_type_details_not_authenticated(self):
+        """Test if not authenticated user can update event type details."""
+        response = self.client.put(self.detail_url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_delete_event_type(self):
+        """Test if superuser can delete event type."""
+        self.client.post(self.login_url, self.superuser_login_data)
+        response = self.client.delete(self.detail_url)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_delete_event_type_not_authenticated(self):
+        """Test if not authenticated user can delete event type."""
         response = self.client.delete(self.detail_url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
