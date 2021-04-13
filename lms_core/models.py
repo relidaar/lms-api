@@ -55,7 +55,7 @@ class Event(models.Model):
     uuid = models.UUIDField(unique=True, editable=False, default=uuid.uuid4, verbose_name='Public identifier')
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True)
-    event_type = models.OneToOneField(EventType, on_delete=models.CASCADE)
+    event_type = models.ForeignKey(EventType, on_delete=models.CASCADE)
     start_time = models.TimeField(verbose_name='Event start time')
     end_time = models.TimeField(verbose_name='Event end time')
     instructor = models.ForeignKey(InstructorProfile, on_delete=models.CASCADE)
