@@ -5,25 +5,26 @@ from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
-from accounts.models import StudentProfile
-from lms_core.models import StudentGroup
-from lms_core.serializers import StudentGroupSerializer
+from accounts.models import StudentProfile, InstructorProfile
+from lms_core.models import StudentGroup, Course
+from lms_core.serializers import StudentGroupSerializer, CourseSerializer
 
 User = get_user_model()
 
 
 class StudentGroupCrudTests(APITestCase):
     """Test module for CRUD actions on student groups."""
+
     def setUp(self) -> None:
-        self.admin_login_data = {
-            'email': 'admin@test.com',
+        self.superuser_login_data = {
+            'email': 'superuser@test.com',
             'password': 'test',
         }
 
-        self.admin = User.objects.create_superuser(
+        self.superuser = User.objects.create_superuser(
             full_name='John Doe',
-            email=self.admin_login_data['email'],
-            password=self.admin_login_data['password'],
+            email=self.superuser_login_data['email'],
+            password=self.superuser_login_data['password'],
         )
 
         self.user1 = User.objects.create_user(
@@ -50,8 +51,8 @@ class StudentGroupCrudTests(APITestCase):
         self.student_group_detail_url = reverse('student-group-detail', kwargs={'uuid': self.student_group1.uuid})
 
     def test_get_all_student_groups(self):
-        """Test if user can retrieve student groups list."""
-        self.client.post(self.login_url, self.admin_login_data)
+        """Test if superuser can retrieve student groups list."""
+        self.client.post(self.login_url, self.superuser_login_data)
 
         self.student_group2 = StudentGroup.objects.create(code='group2')
         self.student_group2.students.add(self.student2)
@@ -68,23 +69,28 @@ class StudentGroupCrudTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_get_valid_single_student_group(self):
-        """Test if admin can retrieve valid student group details."""
-        self.client.post(self.login_url, self.admin_login_data)
+        """Test if superuser can retrieve valid student group details."""
+        self.client.post(self.login_url, self.superuser_login_data)
         response = self.client.get(self.student_group_detail_url)
         group = StudentGroup.objects.get(uuid=self.student_group1.uuid)
         serializer = StudentGroupSerializer(group)
         self.assertEqual(response.data, serializer.data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_admin_get_invalid_single_student_group(self):
-        """Test if admin can retrieve invalid student group details."""
-        self.client.post(self.login_url, self.admin_login_data)
+    def test_get_single_student_group_not_authenticated(self):
+        """Test if not authenticated user can retrieve student group details."""
+        response = self.client.get(self.student_group_detail_url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_get_invalid_single_student_group(self):
+        """Test if superuser can retrieve invalid student group details."""
+        self.client.post(self.login_url, self.superuser_login_data)
         response = self.client.get(reverse('student-group-detail', kwargs={'uuid': uuid4()}))
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_create_valid_student_group(self):
-        """Test if admin can create valid student group."""
-        self.client.post(self.login_url, self.admin_login_data)
+        """Test if superuser can create valid student group."""
+        self.client.post(self.login_url, self.superuser_login_data)
 
         data = {
             'code': 'group2',
@@ -94,8 +100,8 @@ class StudentGroupCrudTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_create_invalid_student_group(self):
-        """Test if admin can create invalid student group."""
-        self.client.post(self.login_url, self.admin_login_data)
+        """Test if superuser can create invalid student group."""
+        self.client.post(self.login_url, self.superuser_login_data)
         response = self.client.post(self.student_groups_list_url)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
@@ -105,8 +111,8 @@ class StudentGroupCrudTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_valid_update_student_group_details(self):
-        """Test if admin can valid update student group details."""
-        self.client.post(self.login_url, self.admin_login_data)
+        """Test if superuser can valid update student group details."""
+        self.client.post(self.login_url, self.superuser_login_data)
 
         data = {
             'code': 'group51',
@@ -118,8 +124,8 @@ class StudentGroupCrudTests(APITestCase):
         self.assertEqual(patch_response.status_code, status.HTTP_200_OK)
 
     def test_invalid_update_student_group_details(self):
-        """Test if admin can invalid update student group details."""
-        self.client.post(self.login_url, self.admin_login_data)
+        """Test if superuser can invalid update student group details."""
+        self.client.post(self.login_url, self.superuser_login_data)
         response = self.client.put(self.student_group_detail_url)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
@@ -129,8 +135,8 @@ class StudentGroupCrudTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_delete_student_group(self):
-        """Test if admin can delete student group."""
-        self.client.post(self.login_url, self.admin_login_data)
+        """Test if superuser can delete student group."""
+        self.client.post(self.login_url, self.superuser_login_data)
         response = self.client.delete(self.student_group_detail_url)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
