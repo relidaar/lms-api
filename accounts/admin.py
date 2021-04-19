@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
 from django.utils.translation import gettext_lazy as _
 
-from accounts.models import StudentProfile, InstructorProfile, UserProfile
+from accounts.models import StudentProfile, InstructorProfile
 
 
 @admin.register(get_user_model())
@@ -35,7 +35,7 @@ class CustomUserAdmin(UserAdmin):
 
     def get_exclude(self, request, obj=None):
         excluded = super().get_exclude(request, obj) or []
-        if not request.admin.is_superuser:
+        if not request.user.is_superuser:
             return excluded + ['is_active', 'is_superuser', 'user_permissions']
         return excluded
 
@@ -45,13 +45,13 @@ class UserProfileAdmin(admin.ModelAdmin):
     search_fields = ('get_full_name', 'get_email', 'uuid',)
 
     def get_full_name(self, obj):
-        return obj.admin.full_name
+        return obj.user.full_name
 
     get_full_name.short_description = 'Full Name'
     get_full_name.admin_order_field = 'full_name'
 
     def get_email(self, obj):
-        return obj.admin.email
+        return obj.user.email
 
     get_email.short_description = 'Email'
 
