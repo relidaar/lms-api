@@ -29,14 +29,14 @@ class PermissionViewSet(MultiSerializerViewSet):
     }
 
 
-class StudentProfileViewSet(MultiSerializerViewSet):
+class StudentProfileViewSet(MultiSerializerViewSet, UUIDViewSet):
     queryset = StudentProfile.objects.all()
     serializers = {
         'default': StudentProfileSerializer,
     }
 
 
-class InstructorProfileViewSet(MultiSerializerViewSet):
+class InstructorProfileViewSet(MultiSerializerViewSet, UUIDViewSet):
     queryset = InstructorProfile.objects.all()
     serializers = {
         'default': InstructorProfileSerializer,
