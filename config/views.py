@@ -1,7 +1,8 @@
+from rest_framework import mixins
 from rest_framework.viewsets import ModelViewSet
 
 
-class UUIDViewSet(ModelViewSet):
+class UUIDLookupFieldMixin(mixins.RetrieveModelMixin):
     lookup_field = 'uuid'
 
 

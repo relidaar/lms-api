@@ -4,10 +4,10 @@ from django.contrib.auth.models import Permission, Group
 from accounts.models import StudentProfile, InstructorProfile
 from accounts.serializers import UserSerializer, UserUpdateSerializer, GroupSerializer, PermissionSerializer, \
     StudentProfileSerializer, InstructorProfileSerializer
-from config.views import MultiSerializerViewSet, UUIDViewSet
+from config.views import MultiSerializerViewSet, UUIDLookupFieldMixin
 
 
-class UserViewSet(MultiSerializerViewSet, UUIDViewSet):
+class UserViewSet(MultiSerializerViewSet, UUIDLookupFieldMixin):
     queryset = get_user_model().objects.all()
     serializers = {
         'default': UserSerializer,
@@ -29,14 +29,14 @@ class PermissionViewSet(MultiSerializerViewSet):
     }
 
 
-class StudentProfileViewSet(MultiSerializerViewSet, UUIDViewSet):
+class StudentProfileViewSet(MultiSerializerViewSet, UUIDLookupFieldMixin):
     queryset = StudentProfile.objects.all()
     serializers = {
         'default': StudentProfileSerializer,
     }
 
 
-class InstructorProfileViewSet(MultiSerializerViewSet, UUIDViewSet):
+class InstructorProfileViewSet(MultiSerializerViewSet, UUIDLookupFieldMixin):
     queryset = InstructorProfile.objects.all()
     serializers = {
         'default': InstructorProfileSerializer,

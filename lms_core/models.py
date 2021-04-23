@@ -2,12 +2,13 @@ import uuid
 
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+
 from accounts.models import InstructorProfile, StudentProfile
+from config.models import UUIDFieldMixin
 
 
-class StudentGroup(models.Model):
+class StudentGroup(UUIDFieldMixin, models.Model):
     """Represent an academic group of students."""
-    uuid = models.UUIDField(unique=True, editable=False, default=uuid.uuid4, verbose_name='Public identifier')
     code = models.CharField(max_length=10, unique=True)
     students = models.ManyToManyField(StudentProfile)
 
@@ -15,25 +16,25 @@ class StudentGroup(models.Model):
         return self.code
 
 
-class Course(models.Model):
+class Course(UUIDFieldMixin, models.Model):
     """Represent an academic course."""
-    uuid = models.UUIDField(unique=True, editable=False, default=uuid.uuid4, verbose_name='Public identifier')
     code = models.CharField(max_length=10, unique=True)
     title = models.CharField(max_length=255)
     syllabus = models.TextField(blank=True)
-    instructors = models.ManyToManyField(InstructorProfile, related_name='instructors')
+    instructors = models.ManyToManyField(
+        InstructorProfile, related_name='instructors')
     student_groups = models.ManyToManyField(StudentGroup)
 
     def __str__(self):
         return f'{self.code} - {self.title}'
 
 
-class Timetable(models.Model):
+class Timetable(UUIDFieldMixin, models.Model):
     """Represent an event timetable related to specific course."""
-    uuid = models.UUIDField(unique=True, editable=False, default=uuid.uuid4, verbose_name='Public identifier')
     code = models.CharField(max_length=10, unique=True)
     title = models.CharField(max_length=255, blank=True)
-    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='timetables')
+    course = models.ForeignKey(
+        Course, on_delete=models.CASCADE, related_name='timetables')
     start_date = models.DateField(verbose_name='Course start date')
     end_date = models.DateField(verbose_name='Course end date')
 
@@ -41,18 +42,16 @@ class Timetable(models.Model):
         return f'{self.title} ({self.course.code} course)'
 
 
-class EventType(models.Model):
+class EventType(UUIDFieldMixin, models.Model):
     """Represent types of timetable events."""
-    uuid = models.UUIDField(unique=True, editable=False, default=uuid.uuid4, verbose_name='Public identifier')
     title = models.CharField(max_length=255)
 
     def __str__(self):
         return self.title
 
 
-class Event(models.Model):
+class Event(UUIDFieldMixin, models.Model):
     """Basic model for timetable events."""
-    uuid = models.UUIDField(unique=True, editable=False, default=uuid.uuid4, verbose_name='Public identifier')
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True)
     event_type = models.ForeignKey(EventType, on_delete=models.CASCADE)
@@ -90,5 +89,7 @@ class PeriodicEvent(Event):
         Even = 'E', _('Even')
         Odd = 'O', _('Odd')
 
-    weekday = models.CharField(max_length=2, choices=WeekDay.choices, default=WeekDay.Monday)
-    repeat_type = models.CharField(max_length=1, choices=RepeatType.choices, default=RepeatType.Weekly)
+    weekday = models.CharField(
+        max_length=2, choices=WeekDay.choices, default=WeekDay.Monday)
+    repeat_type = models.CharField(
+        max_length=1, choices=RepeatType.choices, default=RepeatType.Weekly)
