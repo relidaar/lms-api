@@ -4,7 +4,7 @@ from django.contrib.auth.models import Group, Permission
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 
-from accounts.models import StudentProfile, InstructorProfile
+from accounts.models import StudentProfile, InstructorProfile, UserProfile
 
 
 class CustomLoginSerializer(LoginSerializer):
@@ -24,7 +24,8 @@ class UserSerializer(ModelSerializer):
 
     class Meta:
         model = get_user_model()
-        fields = ('uuid', 'full_name', 'email', 'password', 'is_staff', 'is_active', 'groups',)
+        fields = ('uuid', 'full_name', 'email', 'password',
+                  'is_staff', 'is_active', 'groups',)
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
@@ -47,7 +48,8 @@ class UserUpdateSerializer(ModelSerializer):
 
     def update(self, instance, validated_data):
         instance.email = validated_data.get('email', instance.email)
-        instance.full_name = validated_data.get('full_name', instance.full_name)
+        instance.full_name = validated_data.get(
+            'full_name', instance.full_name)
         instance.groups.set(validated_data.get('groups', instance.groups))
         instance.save()
         return instance
@@ -69,17 +71,29 @@ class PermissionSerializer(ModelSerializer):
         fields = '__all__'
 
 
-class StudentProfileSerializer(ModelSerializer):
+class UserProfileSerializer(ModelSerializer):
+    """Custom serializer for user profile model."""
+    user = serializers.SlugRelatedField(
+        slug_field='uuid',
+        queryset=get_user_model().objects.all(),
+    )
+
+    class Meta:
+        abstract = True
+        fields = ('uuid', 'user', 'created_date', 'modified_date',)
+
+
+class StudentProfileSerializer(UserProfileSerializer):
     """Custom serializer for student profile model."""
 
     class Meta:
         model = StudentProfile
-        fields = '__all__'
+        fields = UserProfileSerializer.Meta.fields + ()
 
 
-class InstructorProfileSerializer(ModelSerializer):
+class InstructorProfileSerializer(UserProfileSerializer):
     """Custom serializer for instructor profile model."""
 
     class Meta:
         model = InstructorProfile
-        fields = '__all__'
+        fields = UserProfileSerializer.Meta.fields + ()
