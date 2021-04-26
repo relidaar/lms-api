@@ -52,8 +52,6 @@ class CustomUser(AbstractBaseUser, PermissionsMixin, UUIDFieldMixin):
 
 class UserProfile(UUIDFieldMixin, models.Model):
     """Basic model for user profiles."""
-    uuid = models.UUIDField(unique=True, editable=False,
-                            default=uuid.uuid4, verbose_name='Public identifier')
     user = models.OneToOneField(CustomUser, on_delete=CASCADE)
     created_date = models.DateTimeField(default=timezone.now, editable=False)
     modified_date = models.DateTimeField(default=timezone.now, editable=False)

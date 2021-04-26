@@ -14,6 +14,7 @@ class UserViewSet(MultiSerializerViewSet, UUIDLookupFieldMixin):
         'update': UserUpdateSerializer,
     }
     filterset_fields = ('full_name', 'email', 'is_staff', 'is_active',)
+    search_fields = ('full_name', 'email',)
 
 
 class GroupViewSet(MultiSerializerViewSet):
@@ -35,6 +36,7 @@ class StudentProfileViewSet(MultiSerializerViewSet, UUIDLookupFieldMixin):
     serializers = {
         'default': StudentProfileSerializer,
     }
+    filterset_fields = ('user',)
 
 
 class InstructorProfileViewSet(MultiSerializerViewSet, UUIDLookupFieldMixin):
@@ -42,3 +44,4 @@ class InstructorProfileViewSet(MultiSerializerViewSet, UUIDLookupFieldMixin):
     serializers = {
         'default': InstructorProfileSerializer,
     }
+    filterset_fields = ('user',)
