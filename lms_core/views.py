@@ -9,7 +9,7 @@ class CourseViewSet(MultiSerializerViewSet, UUIDLookupFieldMixin):
     serializers = {
         'default': CourseSerializer,
     }
-    filterset_fields = ('code', 'title')
+    filterset_fields = ('code', 'title', 'instructors', 'student_groups',)
     search_fields = ('code', 'title',)
 
 
@@ -18,7 +18,7 @@ class StudentGroupViewSet(MultiSerializerViewSet, UUIDLookupFieldMixin):
     serializers = {
         'default': StudentGroupSerializer,
     }
-    filterset_fields = ('code',)
+    filterset_fields = ('code', 'students',)
     search_fields = ('code',)
 
 
@@ -27,28 +27,34 @@ class TimetableViewSet(MultiSerializerViewSet, UUIDLookupFieldMixin):
     serializers = {
         'default': TimetableSerializer,
     }
-    filterset_fields = ('code', 'title', 'course', 'start_date', 'end_date',)
+    filterset_fields = ('code', 'title', 'course', 'course__code',
+                        'course__title', 'start_date', 'end_date',)
     search_fields = ('code', 'title',)
 
 
-class PeriodicEventViewSet(MultiSerializerViewSet, UUIDLookupFieldMixin):
+class EventViewSet(MultiSerializerViewSet, UUIDLookupFieldMixin):
+    filterset_fields = ('title', 'start_time', 'end_time', 'students',
+                        'instructor', 'instructor__user__full_name', 'instructor__user__email',
+                        'timetable', 'timetable__code', 'event_type', 'event_type__title',)
+    search_fields = ('title',)
+
+
+class PeriodicEventViewSet(EventViewSet):
     queryset = PeriodicEvent.objects.all()
     serializers = {
         'default': PeriodicEventSerializer,
     }
-    filterset_fields = ('title', 'event_type', 'start_time', 'end_time',
-                        'instructor', 'timetable', 'weekday', 'repeat_type',)
-    search_fields = ('title',)
+    filterset_fields = EventViewSet.filterset_fields + \
+        ('weekday', 'repeat_type',)
 
 
-class NonPeriodicEventViewSet(MultiSerializerViewSet, UUIDLookupFieldMixin):
+class NonPeriodicEventViewSet(EventViewSet):
     queryset = NonPeriodicEvent.objects.all()
     serializers = {
         'default': NonPeriodicEventSerializer,
     }
-    filterset_fields = ('title', 'event_type', 'start_time', 'end_time',
-                        'instructor', 'timetable', 'date',)
-    search_fields = ('title',)
+    filterset_fields = EventViewSet.filterset_fields + \
+        ('date',)
 
 
 class EventTypeViewSet(MultiSerializerViewSet, UUIDLookupFieldMixin):

@@ -36,7 +36,7 @@ class StudentProfileViewSet(MultiSerializerViewSet, UUIDLookupFieldMixin):
     serializers = {
         'default': StudentProfileSerializer,
     }
-    filterset_fields = ('user',)
+    filterset_fields = ('user', 'user__full_name', 'user__email',)
 
 
 class InstructorProfileViewSet(MultiSerializerViewSet, UUIDLookupFieldMixin):
@@ -44,4 +44,4 @@ class InstructorProfileViewSet(MultiSerializerViewSet, UUIDLookupFieldMixin):
     serializers = {
         'default': InstructorProfileSerializer,
     }
-    filterset_fields = ('user',)
+    filterset_fields = ('user', 'user__full_name', 'user__email',)
