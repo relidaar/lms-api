@@ -13,6 +13,7 @@ class UserViewSet(MultiSerializerViewSet, UUIDLookupFieldMixin):
         'default': UserSerializer,
         'update': UserUpdateSerializer,
     }
+    filterset_fields = ('full_name', 'email', 'is_staff', 'is_active',)
 
 
 class GroupViewSet(MultiSerializerViewSet):

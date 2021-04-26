@@ -9,6 +9,7 @@ class CourseViewSet(MultiSerializerViewSet, UUIDLookupFieldMixin):
     serializers = {
         'default': CourseSerializer,
     }
+    filterset_fields = ('code', 'title')
 
 
 class StudentGroupViewSet(MultiSerializerViewSet, UUIDLookupFieldMixin):
@@ -16,6 +17,7 @@ class StudentGroupViewSet(MultiSerializerViewSet, UUIDLookupFieldMixin):
     serializers = {
         'default': StudentGroupSerializer,
     }
+    filterset_fields = ('code',)
 
 
 class TimetableViewSet(MultiSerializerViewSet, UUIDLookupFieldMixin):
@@ -23,6 +25,7 @@ class TimetableViewSet(MultiSerializerViewSet, UUIDLookupFieldMixin):
     serializers = {
         'default': TimetableSerializer,
     }
+    filterset_fields = ('code', 'title', 'course', 'start_date', 'end_date',)
 
 
 class PeriodicEventViewSet(MultiSerializerViewSet, UUIDLookupFieldMixin):
@@ -30,6 +33,8 @@ class PeriodicEventViewSet(MultiSerializerViewSet, UUIDLookupFieldMixin):
     serializers = {
         'default': PeriodicEventSerializer,
     }
+    filterset_fields = ('title', 'event_type', 'start_time', 'end_time',
+                        'instructor', 'timetable', 'weekday', 'repeat_type',)
 
 
 class NonPeriodicEventViewSet(MultiSerializerViewSet, UUIDLookupFieldMixin):
@@ -37,6 +42,8 @@ class NonPeriodicEventViewSet(MultiSerializerViewSet, UUIDLookupFieldMixin):
     serializers = {
         'default': NonPeriodicEventSerializer,
     }
+    filterset_fields = ('title', 'event_type', 'start_time', 'end_time',
+                        'instructor', 'timetable', 'date',)
 
 
 class EventTypeViewSet(MultiSerializerViewSet, UUIDLookupFieldMixin):
@@ -44,3 +51,4 @@ class EventTypeViewSet(MultiSerializerViewSet, UUIDLookupFieldMixin):
     serializers = {
         'default': EventTypeSerializer,
     }
+    filterset_fields = ('title',)
