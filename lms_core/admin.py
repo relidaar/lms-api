@@ -3,6 +3,13 @@ from django.contrib import admin
 from lms_core.models import Course, StudentGroup, Timetable, PeriodicEvent, NonPeriodicEvent, EventType
 
 
+class RequestAdmin(admin.ModelAdmin):
+    list_display = ('status', 'created_date', 'modified_date',
+                    'created_by', 'modified_by', 'uuid',)
+    search_fields = ('status', 'uuid',)
+    ordering = ('status')
+
+
 @admin.register(Course)
 class CourseAdmin(admin.ModelAdmin):
     list_display = ('code', 'title', 'uuid',)
@@ -29,8 +36,10 @@ class TimetableAdmin(admin.ModelAdmin):
 
 
 class EventAdmin(admin.ModelAdmin):
-    list_display = ('title', 'event_type', 'get_course_code', 'get_instructor', 'uuid',)
-    search_fields = ('title', 'event_type', 'get_course_code', 'get_instructor', 'uuid',)
+    list_display = ('title', 'event_type', 'get_course_code',
+                    'get_instructor', 'uuid',)
+    search_fields = ('title', 'event_type', 'get_course_code',
+                     'get_instructor', 'uuid',)
     list_filter = ('event_type',)
 
     def get_course_code(self, obj):

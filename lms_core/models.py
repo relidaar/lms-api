@@ -1,8 +1,31 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from django.utils import timezone
+from django.contrib.auth import get_user_model
 
 from accounts.models import InstructorProfile, StudentProfile
 from config.models import UUIDFieldMixin
+
+
+class Request(UUIDFieldMixin, models.Model):
+    """Basic model for permission requests."""
+    class RequestStatus(models.TextChoices):
+        InProcessing = 'P', _('InProcessing')
+        Approved = 'A', _('Approved')
+        Declined = 'D', _('Declined')
+
+    status = models.CharField(
+        max_length=1, choices=RequestStatus.choices, default=RequestStatus.InProcessing)
+
+    created_date = models.DateTimeField(default=timezone.now, editable=False)
+    modified_date = models.DateTimeField(default=timezone.now, editable=False)
+    created_by = models.ForeignKey(
+        get_user_model(), on_delete=models.SET_NULL, null=True)
+    modified_by = models.ForeignKey(
+        get_user_model(), on_delete=models.SET_NULL, null=True)
+
+    class Meta:
+        abstract = True
 
 
 class StudentGroup(UUIDFieldMixin, models.Model):

@@ -1,12 +1,12 @@
 from rest_framework import mixins
-from rest_framework.viewsets import ModelViewSet
+from rest_framework import viewsets
 
 
 class UUIDLookupFieldMixin(mixins.RetrieveModelMixin):
     lookup_field = 'uuid'
 
 
-class MultiSerializerViewSet(ModelViewSet):
+class MultiSerializerViewSet(viewsets.ModelViewSet):
     serializers = {
         'default': None,
     }

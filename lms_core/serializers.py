@@ -1,8 +1,15 @@
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 
-from lms_core.models import Course, StudentGroup, Timetable, EventType, PeriodicEvent, NonPeriodicEvent
+from lms_core.models import Course, Request, StudentGroup, Timetable, EventType, PeriodicEvent, NonPeriodicEvent
 from accounts.models import InstructorProfile, StudentProfile
+
+
+class RequestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Request
+        fields = ('uuid', 'status', 'created_date', 'modified_date',
+                  'created_by', 'modified_by',)
 
 
 class CourseSerializer(ModelSerializer):
