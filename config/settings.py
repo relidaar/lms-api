@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'drf_spectacular',
     'django_filters',
     'crispy_forms',
+    'generic_relations',
 
     'accounts.apps.AccountsConfig',
     'lms_core.apps.LmsCoreConfig',

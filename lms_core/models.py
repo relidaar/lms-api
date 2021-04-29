@@ -2,13 +2,15 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django.utils import timezone
 from django.contrib.auth import get_user_model
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 
 from accounts.models import InstructorProfile, StudentProfile
 from config.models import UUIDFieldMixin
 
 
 class Request(UUIDFieldMixin, models.Model):
-    """Basic model for permission requests."""
+    """Represent a permission request."""
     class RequestStatus(models.TextChoices):
         InProcessing = 'P', _('InProcessing')
         Approved = 'A', _('Approved')
@@ -17,15 +19,16 @@ class Request(UUIDFieldMixin, models.Model):
     status = models.CharField(
         max_length=1, choices=RequestStatus.choices, default=RequestStatus.InProcessing)
 
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    requested_object = GenericForeignKey('content_type', 'object_id',)
+
     created_date = models.DateTimeField(default=timezone.now, editable=False)
     modified_date = models.DateTimeField(default=timezone.now, editable=False)
     created_by = models.ForeignKey(
-        get_user_model(), on_delete=models.SET_NULL, null=True)
+        get_user_model(), on_delete=models.SET_NULL, null=True, related_name='created_by_user')
     modified_by = models.ForeignKey(
-        get_user_model(), on_delete=models.SET_NULL, null=True)
-
-    class Meta:
-        abstract = True
+        get_user_model(), on_delete=models.SET_NULL, null=True, related_name='modified_by_user')
 
 
 class StudentGroup(UUIDFieldMixin, models.Model):

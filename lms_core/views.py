@@ -1,12 +1,14 @@
 from rest_framework import viewsets, mixins
 
 from config.views import MultiSerializerViewSet, UUIDLookupFieldMixin
-from lms_core.models import Course, StudentGroup, Timetable, PeriodicEvent, NonPeriodicEvent, EventType
+from lms_core.models import Course, Request, StudentGroup, Timetable, PeriodicEvent, NonPeriodicEvent, EventType
 from lms_core.serializers import CourseSerializer, EventTypeSerializer, NonPeriodicEventSerializer, \
-    PeriodicEventSerializer, TimetableSerializer, StudentGroupSerializer
+    PeriodicEventSerializer, RequestSerializer, TimetableSerializer, StudentGroupSerializer
 
 
 class RequestViewSet(UUIDLookupFieldMixin, viewsets.ReadOnlyModelViewSet, mixins.CreateModelMixin):
+    queryset = Request.objects.all()
+    serializer_class = RequestSerializer
     filterset_fields = ('status', 'created_date', 'modified_date',
                         'created_by', 'modified_by',)
 

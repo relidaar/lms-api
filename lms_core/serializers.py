@@ -1,15 +1,30 @@
+from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
+from generic_relations.relations import GenericRelatedField
 
 from lms_core.models import Course, Request, StudentGroup, Timetable, EventType, PeriodicEvent, NonPeriodicEvent
 from accounts.models import InstructorProfile, StudentProfile
 
 
 class RequestSerializer(serializers.ModelSerializer):
+    created_by = serializers.SlugRelatedField(
+        slug_field='uuid', queryset=get_user_model().objects.all())
+    modified_by = serializers.SlugRelatedField(
+        slug_field='uuid', queryset=get_user_model().objects.all())
+    requested_object = GenericRelatedField({
+        Course: serializers.SlugRelatedField(slug_field='uuid', queryset=Course.objects.all()),
+        StudentGroup: serializers.SlugRelatedField(slug_field='uuid', queryset=StudentGroup.objects.all()),
+        Timetable: serializers.SlugRelatedField(slug_field='uuid', queryset=Timetable.objects.all()),
+        PeriodicEvent: serializers.SlugRelatedField(slug_field='uuid', queryset=PeriodicEvent.objects.all()),
+        NonPeriodicEvent: serializers.SlugRelatedField(slug_field='uuid', queryset=NonPeriodicEvent.objects.all()),
+        EventType: serializers.SlugRelatedField(slug_field='uuid', queryset=EventType.objects.all()),
+    })
+
     class Meta:
         model = Request
         fields = ('uuid', 'status', 'created_date', 'modified_date',
-                  'created_by', 'modified_by',)
+                  'created_by', 'modified_by', 'requested_object',)
 
 
 class CourseSerializer(ModelSerializer):
