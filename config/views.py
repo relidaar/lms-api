@@ -6,7 +6,7 @@ class UUIDLookupFieldMixin(mixins.RetrieveModelMixin):
     lookup_field = 'uuid'
 
 
-class MultiSerializerViewSet(viewsets.ModelViewSet):
+class MultiSerializerMixin(viewsets.GenericViewSet):
     serializers = {
         'default': None,
     }

@@ -1,13 +1,14 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission, Group
+from rest_framework.viewsets import ModelViewSet
 
 from accounts.models import StudentProfile, InstructorProfile
 from accounts.serializers import UserSerializer, UserUpdateSerializer, GroupSerializer, PermissionSerializer, \
     StudentProfileSerializer, InstructorProfileSerializer
-from config.views import MultiSerializerViewSet, UUIDLookupFieldMixin
+from config.views import MultiSerializerMixin, UUIDLookupFieldMixin
 
 
-class UserViewSet(MultiSerializerViewSet, UUIDLookupFieldMixin):
+class UserViewSet(ModelViewSet, MultiSerializerMixin, UUIDLookupFieldMixin):
     queryset = get_user_model().objects.all()
     serializers = {
         'default': UserSerializer,
@@ -17,21 +18,21 @@ class UserViewSet(MultiSerializerViewSet, UUIDLookupFieldMixin):
     search_fields = ('full_name', 'email',)
 
 
-class GroupViewSet(MultiSerializerViewSet):
+class GroupViewSet(ModelViewSet, MultiSerializerMixin):
     queryset = Group.objects.all()
     serializers = {
         'default': GroupSerializer,
     }
 
 
-class PermissionViewSet(MultiSerializerViewSet):
+class PermissionViewSet(ModelViewSet, MultiSerializerMixin):
     queryset = Permission.objects.all()
     serializers = {
         'default': PermissionSerializer,
     }
 
 
-class StudentProfileViewSet(MultiSerializerViewSet, UUIDLookupFieldMixin):
+class StudentProfileViewSet(ModelViewSet, MultiSerializerMixin, UUIDLookupFieldMixin):
     queryset = StudentProfile.objects.all()
     serializers = {
         'default': StudentProfileSerializer,
@@ -39,7 +40,7 @@ class StudentProfileViewSet(MultiSerializerViewSet, UUIDLookupFieldMixin):
     filterset_fields = ('user', 'user__full_name', 'user__email',)
 
 
-class InstructorProfileViewSet(MultiSerializerViewSet, UUIDLookupFieldMixin):
+class InstructorProfileViewSet(ModelViewSet, MultiSerializerMixin, UUIDLookupFieldMixin):
     queryset = InstructorProfile.objects.all()
     serializers = {
         'default': InstructorProfileSerializer,
