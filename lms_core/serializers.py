@@ -3,14 +3,12 @@ from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 from generic_relations.relations import GenericRelatedField
 
-from lms_core.models import Course, Request, StudentGroup, Timetable, EventType, PeriodicEvent, NonPeriodicEvent
+from lms_core.models import Course, Request, Response, StudentGroup, Timetable, EventType, PeriodicEvent, NonPeriodicEvent
 from accounts.models import InstructorProfile, StudentProfile
 
 
 class RequestSerializer(serializers.ModelSerializer):
     created_by = serializers.SlugRelatedField(
-        slug_field='uuid', queryset=get_user_model().objects.all())
-    modified_by = serializers.SlugRelatedField(
         slug_field='uuid', queryset=get_user_model().objects.all())
     requested_object = GenericRelatedField({
         Course: serializers.SlugRelatedField(slug_field='uuid', queryset=Course.objects.all()),
@@ -23,8 +21,20 @@ class RequestSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Request
-        fields = ('uuid', 'status', 'created_date', 'modified_date',
-                  'created_by', 'modified_by', 'requested_object',)
+        fields = ('uuid', 'created_date', 'created_by', 'requested_object',)
+
+
+class ResponseSerializer(serializers.ModelSerializer):
+    created_by = serializers.SlugRelatedField(
+        slug_field='uuid', queryset=get_user_model().objects.all())
+    related_request = serializers.SlugRelatedField(
+        slug_field='uuid', queryset=Request.objects.all()
+    )
+
+    class Meta:
+        model = Response
+        fields = ('uuid', 'status', 'created_date', 'created_by',
+                  'related_request', 'comment',)
 
 
 class CourseSerializer(ModelSerializer):

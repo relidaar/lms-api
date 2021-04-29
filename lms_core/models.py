@@ -11,24 +11,28 @@ from config.models import UUIDFieldMixin
 
 class Request(UUIDFieldMixin, models.Model):
     """Represent a permission request."""
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    requested_object = GenericForeignKey('content_type', 'object_id',)
+    created_date = models.DateTimeField(default=timezone.now, editable=False)
+    created_by = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL,
+                                   null=True,)
+
+
+class Response(UUIDFieldMixin, models.Model):
+    """Represent a permission response."""
     class RequestStatus(models.TextChoices):
         InProcessing = 'P', _('InProcessing')
         Approved = 'A', _('Approved')
         Declined = 'D', _('Declined')
 
-    status = models.CharField(
-        max_length=1, choices=RequestStatus.choices, default=RequestStatus.InProcessing)
-
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    object_id = models.PositiveIntegerField()
-    requested_object = GenericForeignKey('content_type', 'object_id',)
-
+    status = models.CharField(max_length=1, choices=RequestStatus.choices,
+                              default=RequestStatus.InProcessing)
+    related_request = models.OneToOneField(Request, on_delete=models.CASCADE)
+    comment = models.TextField(blank=True,)
     created_date = models.DateTimeField(default=timezone.now, editable=False)
-    modified_date = models.DateTimeField(default=timezone.now, editable=False)
-    created_by = models.ForeignKey(
-        get_user_model(), on_delete=models.SET_NULL, null=True, related_name='created_by_user')
-    modified_by = models.ForeignKey(
-        get_user_model(), on_delete=models.SET_NULL, null=True, related_name='modified_by_user')
+    created_by = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL,
+                                   null=True,)
 
 
 class StudentGroup(UUIDFieldMixin, models.Model):
