@@ -1,5 +1,6 @@
 from rest_framework import viewsets, mixins
 from rest_framework.viewsets import ModelViewSet
+from django_auto_prefetching import AutoPrefetchViewSetMixin
 
 from config.views import MultiSerializerMixin, UUIDLookupFieldMixin
 from lms_core.models import Course, Request, Response, StudentGroup, Timetable, PeriodicEvent, NonPeriodicEvent, EventType
@@ -7,19 +8,19 @@ from lms_core.serializers import CourseSerializer, EventTypeSerializer, NonPerio
     PeriodicEventSerializer, RequestSerializer, ResponseSerializer, TimetableSerializer, StudentGroupSerializer
 
 
-class RequestViewSet(UUIDLookupFieldMixin, viewsets.ReadOnlyModelViewSet, mixins.CreateModelMixin):
+class RequestViewSet(UUIDLookupFieldMixin, viewsets.ReadOnlyModelViewSet, mixins.CreateModelMixin, AutoPrefetchViewSetMixin):
     queryset = Request.objects.all()
     serializer_class = RequestSerializer
     filterset_fields = ('created_date', 'created_by',)
 
 
-class ResponseViewSet(UUIDLookupFieldMixin, viewsets.ReadOnlyModelViewSet, mixins.CreateModelMixin):
+class ResponseViewSet(UUIDLookupFieldMixin, viewsets.ReadOnlyModelViewSet, mixins.CreateModelMixin, AutoPrefetchViewSetMixin):
     queryset = Response.objects.all()
     serializer_class = ResponseSerializer
     filterset_fields = ('status', 'created_date', 'created_by',)
 
 
-class CourseViewSet(ModelViewSet, MultiSerializerMixin, UUIDLookupFieldMixin):
+class CourseViewSet(ModelViewSet, MultiSerializerMixin, UUIDLookupFieldMixin, AutoPrefetchViewSetMixin):
     queryset = Course.objects.all()
     serializers = {
         'default': CourseSerializer,
@@ -28,7 +29,7 @@ class CourseViewSet(ModelViewSet, MultiSerializerMixin, UUIDLookupFieldMixin):
     search_fields = ('code', 'title',)
 
 
-class StudentGroupViewSet(ModelViewSet, MultiSerializerMixin, UUIDLookupFieldMixin):
+class StudentGroupViewSet(ModelViewSet, MultiSerializerMixin, UUIDLookupFieldMixin, AutoPrefetchViewSetMixin):
     queryset = StudentGroup.objects.all()
     serializers = {
         'default': StudentGroupSerializer,
@@ -37,7 +38,7 @@ class StudentGroupViewSet(ModelViewSet, MultiSerializerMixin, UUIDLookupFieldMix
     search_fields = ('code',)
 
 
-class TimetableViewSet(ModelViewSet, MultiSerializerMixin, UUIDLookupFieldMixin):
+class TimetableViewSet(ModelViewSet, MultiSerializerMixin, UUIDLookupFieldMixin, AutoPrefetchViewSetMixin):
     queryset = Timetable.objects.all()
     serializers = {
         'default': TimetableSerializer,
@@ -47,7 +48,7 @@ class TimetableViewSet(ModelViewSet, MultiSerializerMixin, UUIDLookupFieldMixin)
     search_fields = ('code', 'title',)
 
 
-class EventViewSet(ModelViewSet, MultiSerializerMixin, UUIDLookupFieldMixin):
+class EventViewSet(ModelViewSet, MultiSerializerMixin, UUIDLookupFieldMixin, AutoPrefetchViewSetMixin):
     filterset_fields = ('title', 'start_time', 'end_time', 'students',
                         'instructor', 'instructor__user__full_name', 'instructor__user__email',
                         'timetable', 'timetable__code', 'event_type', 'event_type__title',)
@@ -72,7 +73,7 @@ class NonPeriodicEventViewSet(EventViewSet):
         ('date',)
 
 
-class EventTypeViewSet(ModelViewSet, MultiSerializerMixin, UUIDLookupFieldMixin):
+class EventTypeViewSet(ModelViewSet, MultiSerializerMixin, UUIDLookupFieldMixin, AutoPrefetchViewSetMixin):
     queryset = EventType.objects.all()
     serializers = {
         'default': EventTypeSerializer,

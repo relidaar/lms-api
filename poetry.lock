@@ -104,6 +104,20 @@ argon2 = ["argon2-cffi (>=16.1.0)"]
 bcrypt = ["bcrypt"]
 
 [[package]]
+name = "django-auto-prefetching"
+version = "0.1.9"
+description = "Tools for automatically prefetching related objects in Django and Django-rest-framework"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+django = ">=2.2"
+
+[package.extras]
+rest_framework_integration = ["djangorestframework (>=3.9,<4.0)"]
+
+[[package]]
 name = "django-crispy-forms"
 version = "1.11.2"
 description = "Best way to have Django DRY forms"
@@ -468,7 +482,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "d8646bacad104e802ef709c66b6fd2179115342e9dcde414ad34073bd298ffbc"
+content-hash = "505df43af18a873fe9e51ea3670a023b0dbe2bfb8b6048bfc716da4511cf1af4"
 
 [metadata.files]
 asgiref = [
@@ -505,6 +519,10 @@ dj-rest-auth = [
 django = [
     {file = "Django-3.1.8-py3-none-any.whl", hash = "sha256:c348b3ddc452bf4b62361f0752f71a339140c777ebea3cdaaaa8fdb7f417a862"},
     {file = "Django-3.1.8.tar.gz", hash = "sha256:f8393103e15ec2d2d313ccbb95a3f1da092f9f58d74ac1c61ca2ac0436ae1eac"},
+]
+django-auto-prefetching = [
+    {file = "django_auto_prefetching-0.1.9-py2.py3-none-any.whl", hash = "sha256:4fe760bef1ad2948d1c988710525bbd1f3adc52328da8703ba1de45cb1ba535d"},
+    {file = "django_auto_prefetching-0.1.9.tar.gz", hash = "sha256:0b07be02a9f0d01251137a4d42b3025d400937b6c46f0d84999e00afdfe5e1c3"},
 ]
 django-crispy-forms = [
     {file = "django-crispy-forms-1.11.2.tar.gz", hash = "sha256:88efa857ce6111bd696cc4f74057539a3456102fe9c3a3ece8868e1e4579e70a"},
