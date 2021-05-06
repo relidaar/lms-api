@@ -27,7 +27,7 @@ SECRET_KEY = env('DJANGO_SECRET_KEY',
                  default='o@@xi3*c(%p1-qgu=@07@9&$j@h-u8__j2w&wq8fdpk7x96jav')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env('DJANGO_DEBUG', default=True)
+DEBUG = env('DJANGO_DEBUG', default=False)
 
 ALLOWED_HOSTS = env('DJANGO_ALLOWED_HOSTS', default='*').split()
 
@@ -39,6 +39,7 @@ MIDDLEWARE = [
     'silk.middleware.SilkyMiddleware',
 
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',

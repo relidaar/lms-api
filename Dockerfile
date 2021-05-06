@@ -20,3 +20,5 @@ RUN poetry config virtualenvs.create false \
   && poetry install $(test "$LMS_ENV" == production && echo "--no-dev") --no-interaction --no-ansi
 
 COPY . /code
+
+CMD gunicorn config.wsgi:application --bind 0.0.0.0:$PORT
