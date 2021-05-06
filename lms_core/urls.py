@@ -1,17 +1,16 @@
 from rest_framework.routers import SimpleRouter
 
-from lms_core.views import CourseViewSet, RequestViewSet, ResponseViewSet, StudentGroupViewSet, TimetableViewSet, PeriodicEventViewSet, \
-    NonPeriodicEventViewSet, EventTypeViewSet
+from lms_core.views import (
+    CourseViewSet, RequestViewSet, ResponseViewSet, StudentGroupViewSet,
+    TimetableViewSet, EventTypeViewSet, EventViewSet,
+)
 
 router = SimpleRouter()
 router.register('courses', CourseViewSet, basename='course')
 router.register('student-groups', StudentGroupViewSet,
                 basename='student-group')
 router.register('timetables', TimetableViewSet, basename='timetable')
-router.register('periodic-events', PeriodicEventViewSet,
-                basename='periodic-event')
-router.register('nonperiodic-events', NonPeriodicEventViewSet,
-                basename='nonperiodic-event')
+router.register('events', EventViewSet, basename='event')
 router.register('event-types', EventTypeViewSet, basename='event-type')
 router.register('requests', RequestViewSet, basename='request')
 router.register('responses', ResponseViewSet, basename='response')

@@ -3,9 +3,13 @@ from rest_framework.viewsets import ModelViewSet
 from django_auto_prefetching import AutoPrefetchViewSetMixin
 
 from config.views import MultiSerializerMixin, UUIDLookupFieldMixin
-from lms_core.models import Course, Request, Response, StudentGroup, Timetable, PeriodicEvent, NonPeriodicEvent, EventType
-from lms_core.serializers import CourseSerializer, EventTypeSerializer, NonPeriodicEventSerializer, \
-    PeriodicEventSerializer, RequestSerializer, ResponseSerializer, TimetableSerializer, StudentGroupSerializer
+from lms_core.models import (
+    Course, Event, Request, Response, StudentGroup, Timetable, EventType
+)
+from lms_core.serializers import (
+    EventSerializer, CourseSerializer, EventTypeSerializer, RequestSerializer,
+    ResponseSerializer, TimetableSerializer, StudentGroupSerializer
+)
 
 
 class RequestViewSet(UUIDLookupFieldMixin, viewsets.ReadOnlyModelViewSet, mixins.CreateModelMixin, AutoPrefetchViewSetMixin):
@@ -49,28 +53,14 @@ class TimetableViewSet(ModelViewSet, MultiSerializerMixin, UUIDLookupFieldMixin,
 
 
 class EventViewSet(ModelViewSet, MultiSerializerMixin, UUIDLookupFieldMixin, AutoPrefetchViewSetMixin):
-    filterset_fields = ('title', 'start_time', 'end_time', 'students',
-                        'instructor', 'instructor__user__full_name', 'instructor__user__email',
-                        'timetable', 'timetable__code', 'event_type', 'event_type__title',)
+    queryset = Event.objects.all()
+    filterset_fields = ('title', 'event_type', 'event_type__title', 'timetable',
+                        'timetable__code',)
+
     search_fields = ('title',)
-
-
-class PeriodicEventViewSet(EventViewSet):
-    queryset = PeriodicEvent.objects.all()
     serializers = {
-        'default': PeriodicEventSerializer,
+        'default': EventSerializer,
     }
-    filterset_fields = EventViewSet.filterset_fields + \
-        ('weekday', 'repeat_type',)
-
-
-class NonPeriodicEventViewSet(EventViewSet):
-    queryset = NonPeriodicEvent.objects.all()
-    serializers = {
-        'default': NonPeriodicEventSerializer,
-    }
-    filterset_fields = EventViewSet.filterset_fields + \
-        ('date',)
 
 
 class EventTypeViewSet(ModelViewSet, MultiSerializerMixin, UUIDLookupFieldMixin, AutoPrefetchViewSetMixin):

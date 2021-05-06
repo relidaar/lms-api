@@ -1,9 +1,13 @@
 from django.contrib.auth import get_user_model
+from django.contrib.contenttypes import fields
 from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer
 from generic_relations.relations import GenericRelatedField
 
-from lms_core.models import Course, Request, Response, StudentGroup, Timetable, EventType, PeriodicEvent, NonPeriodicEvent
+from lms_core.models import (
+    Course, Event, NonPeriodicEventDetails, PeriodicEventDetails, Request, Response,
+    StudentGroup, Timetable, EventType,
+)
 from accounts.models import InstructorProfile, StudentProfile
 
 
@@ -14,8 +18,7 @@ class RequestSerializer(serializers.ModelSerializer):
         Course: serializers.SlugRelatedField(slug_field='uuid', queryset=Course.objects.all()),
         StudentGroup: serializers.SlugRelatedField(slug_field='uuid', queryset=StudentGroup.objects.all()),
         Timetable: serializers.SlugRelatedField(slug_field='uuid', queryset=Timetable.objects.all()),
-        PeriodicEvent: serializers.SlugRelatedField(slug_field='uuid', queryset=PeriodicEvent.objects.all()),
-        NonPeriodicEvent: serializers.SlugRelatedField(slug_field='uuid', queryset=NonPeriodicEvent.objects.all()),
+        Event: serializers.SlugRelatedField(slug_field='uuid', queryset=Event.objects.all()),
         EventType: serializers.SlugRelatedField(slug_field='uuid', queryset=EventType.objects.all()),
     })
 
@@ -79,12 +82,7 @@ class TimetableSerializer(ModelSerializer):
         fields = ('uuid', 'code', 'title', 'course', 'start_date', 'end_date',)
 
 
-class EventSerializer(ModelSerializer):
-    event_type = serializers.SlugRelatedField(
-        slug_field='uuid',
-        queryset=EventType.objects.all(),
-    )
-
+class EventDetailsSerializer(ModelSerializer):
     instructor = serializers.SlugRelatedField(
         slug_field='uuid',
         queryset=InstructorProfile.objects.all(),
@@ -96,27 +94,50 @@ class EventSerializer(ModelSerializer):
         many=True,
     )
 
+    class Meta:
+        abstract = True
+        fields = ('uuid', 'start_time', 'end_time', 'instructor', 'students',)
+
+
+class PeriodicEventDetailsSerializer(EventDetailsSerializer):
+    class Meta:
+        model = PeriodicEventDetails
+        fields = EventDetailsSerializer.Meta.fields + \
+            ('weekday', 'repeat_type',)
+
+
+class NonPeriodicEventDetailsSerializer(EventDetailsSerializer):
+    class Meta:
+        model = NonPeriodicEventDetails
+        fields = EventDetailsSerializer.Meta.fields + \
+            ('date',)
+
+
+class EventSerializer(ModelSerializer):
+    event_type = serializers.SlugRelatedField(
+        slug_field='uuid',
+        queryset=EventType.objects.all(),
+    )
+
+    periodic_event_details = PeriodicEventDetailsSerializer(
+        source='periodic_event_details_set',
+        many=True,
+    )
+    non_periodic_event_details = NonPeriodicEventDetailsSerializer(
+        source='non_periodic_event_details_set',
+        many=True,
+    )
+
     timetable = serializers.SlugRelatedField(
         slug_field='uuid',
         queryset=Timetable.objects.all(),
     )
 
     class Meta:
-        abstract = True
-        fields = ('uuid', 'title', 'description', 'event_type',
-                  'start_time', 'end_time', 'instructor', 'students', 'timetable',)
-
-
-class PeriodicEventSerializer(EventSerializer):
-    class Meta:
-        model = PeriodicEvent
-        fields = EventSerializer.Meta.fields + ()
-
-
-class NonPeriodicEventSerializer(EventSerializer):
-    class Meta:
-        model = NonPeriodicEvent
-        fields = EventSerializer.Meta.fields + ()
+        model = Event
+        depth = 1
+        fields = ('uuid', 'title', 'description', 'event_type', 'timetable',
+                  'periodic_event_details', 'non_periodic_event_details')
 
 
 class EventTypeSerializer(ModelSerializer):

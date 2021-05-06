@@ -83,26 +83,26 @@ class Event(UUIDFieldMixin, models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True)
     event_type = models.ForeignKey(EventType, on_delete=models.CASCADE)
-    start_time = models.TimeField(verbose_name='Event start time')
-    end_time = models.TimeField(verbose_name='Event end time')
-    instructor = models.ForeignKey(InstructorProfile, on_delete=models.CASCADE)
-    students = models.ManyToManyField(StudentProfile)
     timetable = models.ForeignKey(Timetable, on_delete=models.CASCADE)
 
     def __str__(self):
         return f'{self.title} ({self.event_type.title})'
 
+
+class EventDetails(UUIDFieldMixin, models.Model):
+    """Basic details for course event."""
+    start_time = models.TimeField(verbose_name='Event start time')
+    end_time = models.TimeField(verbose_name='Event end time')
+    instructor = models.ForeignKey(InstructorProfile, on_delete=models.CASCADE)
+    students = models.ManyToManyField(StudentProfile)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
+
     class Meta:
         abstract = True
 
 
-class NonPeriodicEvent(Event):
-    """Represent non periodic event with specific date."""
-    date = models.DateField()
-
-
-class PeriodicEvent(Event):
-    """Represent periodic event with specific weekday and repeat type."""
+class PeriodicEventDetails(EventDetails):
+    """Represent details for periodic course events."""
     class WeekDay(models.TextChoices):
         Monday = 'MO', _('Monday')
         Tuesday = 'TU', _('Tuesday')
@@ -121,3 +121,8 @@ class PeriodicEvent(Event):
         max_length=2, choices=WeekDay.choices, default=WeekDay.Monday)
     repeat_type = models.CharField(
         max_length=1, choices=RepeatType.choices, default=RepeatType.Weekly)
+
+
+class NonPeriodicEventDetails(EventDetails):
+    """Represent details for non-periodic course events."""
+    date = models.DateTimeField()
