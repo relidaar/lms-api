@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'generic_relations',
     'silk',
+    'schema_graph',
 
     'accounts.apps.AccountsConfig',
     'lms_core.apps.LmsCoreConfig',

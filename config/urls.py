@@ -15,6 +15,7 @@ Including another URLconf
 """
 from django.urls import path, include
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
+from schema_graph.views import Schema
 
 urlpatterns = [
     path('api/v1/', include([
@@ -29,4 +30,5 @@ urlpatterns = [
     ])),
 
     path('silk/', include('silk.urls')),
+    path('schema/', Schema.as_view())
 ]

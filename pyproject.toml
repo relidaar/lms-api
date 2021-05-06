@@ -18,6 +18,7 @@ django-crispy-forms = "^1.11.2"
 rest-framework-generic-relations = "^2.0.0"
 django-silk = "^4.1.0"
 django-auto-prefetching = "^0.1.9"
+django-schema-graph = "^1.2.0"
 
 [tool.poetry.dev-dependencies]
 autopep8 = "^1.5.6"

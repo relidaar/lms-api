@@ -156,6 +156,17 @@ python-versions = ">=3.5"
 Django = ">=2.2"
 
 [[package]]
+name = "django-schema-graph"
+version = "1.2.0"
+description = "An interactive graph of your Django model structure."
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+attrs = "*"
+
+[[package]]
 name = "django-silk"
 version = "4.1.0"
 description = "Silky smooth profiling for the Django Framework"
@@ -493,7 +504,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "1d70c51ad02896d86f653e4280e0ff5bfa7405a4d89d03a15c3f5bfea524fd08"
+content-hash = "4c548b77d7181ad10a35de16d39fb1650132a9688cef8857c6877961710b131c"
 
 [metadata.files]
 asgiref = [
@@ -600,6 +611,10 @@ django-environ = [
 django-filter = [
     {file = "django-filter-2.4.0.tar.gz", hash = "sha256:84e9d5bb93f237e451db814ed422a3a625751cbc9968b484ecc74964a8696b06"},
     {file = "django_filter-2.4.0-py3-none-any.whl", hash = "sha256:e00d32cebdb3d54273c48f4f878f898dced8d5dfaad009438fe61ebdf535ace1"},
+]
+django-schema-graph = [
+    {file = "django-schema-graph-1.2.0.tar.gz", hash = "sha256:9efb3b9f18c1875a9ef5b2af0f7f4aac59109da5ea5d8202b265a09f0d7b2425"},
+    {file = "django_schema_graph-1.2.0-py2.py3-none-any.whl", hash = "sha256:baa8b06e4dabfa55a52b84d555e97f058990bfd857fa39b1e24e112e0d9e948e"},
 ]
 django-silk = [
     {file = "django_silk-4.1.0-py2.py3-none-any.whl", hash = "sha256:a331e55618fa62eaf3cf5a63f31bc1e91205efbeeca5e587c577498b0e251ed8"},
