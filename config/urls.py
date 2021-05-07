@@ -15,20 +15,20 @@ Including another URLconf
 """
 from django.urls import path, include
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
-from schema_graph.views import Schema
 
 urlpatterns = [
+    path('', SpectacularRedocView.as_view(url_name='schema')),
+
+    path('schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('swagger/', SpectacularSwaggerView.as_view(url_name='schema'),
+         name='swagger'),
+    path('redoc/', SpectacularRedocView.as_view(url_name='schema'),
+         name='redoc'),
+
+    path('silk/', include('silk.urls')),
     path('api/v1/', include([
         path('accounts/', include('accounts.urls')),
         path('lms-core/', include('lms_core.urls')),
-
-        path('schema/', SpectacularAPIView.as_view(), name='schema'),
-        path('swagger/', SpectacularSwaggerView.as_view(url_name='schema'),
-             name='swagger'),
-        path('redoc/', SpectacularRedocView.as_view(url_name='schema'),
-             name='redoc'),
     ])),
 
-    path('silk/', include('silk.urls')),
-    path('schema/', Schema.as_view())
 ]

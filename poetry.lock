@@ -168,17 +168,6 @@ Django = ">=2.2"
 redis = ">=3.0.0"
 
 [[package]]
-name = "django-schema-graph"
-version = "1.2.0"
-description = "An interactive graph of your Django model structure."
-category = "main"
-optional = false
-python-versions = "*"
-
-[package.dependencies]
-attrs = "*"
-
-[[package]]
 name = "django-silk"
 version = "4.1.0"
 description = "Silky smooth profiling for the Django Framework"
@@ -538,7 +527,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "509b217636c50c0a7e3925e234bce63734af1c084deca8df43c3a5837cfb3f8e"
+content-hash = "d1ace6c55406ea30d516ec761dc987c27fa4aae853a9ab20e693c0d99b54295b"
 
 [metadata.files]
 asgiref = [
@@ -649,10 +638,6 @@ django-filter = [
 django-redis = [
     {file = "django-redis-4.12.1.tar.gz", hash = "sha256:306589c7021e6468b2656edc89f62b8ba67e8d5a1c8877e2688042263daa7a63"},
     {file = "django_redis-4.12.1-py3-none-any.whl", hash = "sha256:1133b26b75baa3664164c3f44b9d5d133d1b8de45d94d79f38d1adc5b1d502e5"},
-]
-django-schema-graph = [
-    {file = "django-schema-graph-1.2.0.tar.gz", hash = "sha256:9efb3b9f18c1875a9ef5b2af0f7f4aac59109da5ea5d8202b265a09f0d7b2425"},
-    {file = "django_schema_graph-1.2.0-py2.py3-none-any.whl", hash = "sha256:baa8b06e4dabfa55a52b84d555e97f058990bfd857fa39b1e24e112e0d9e948e"},
 ]
 django-silk = [
     {file = "django_silk-4.1.0-py2.py3-none-any.whl", hash = "sha256:a331e55618fa62eaf3cf5a63f31bc1e91205efbeeca5e587c577498b0e251ed8"},
