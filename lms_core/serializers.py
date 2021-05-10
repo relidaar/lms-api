@@ -1,95 +1,146 @@
 from django.contrib.auth import get_user_model
-from django.contrib.contenttypes import fields
-from rest_framework import serializers
-from rest_framework.serializers import ModelSerializer
 from generic_relations.relations import GenericRelatedField
+from rest_framework import serializers
 
 from lms_core.models import (
     Course, Event, NonPeriodicEventDetails, PeriodicEventDetails, Request, Response,
     StudentGroup, Timetable, EventType,
 )
 from accounts.models import InstructorProfile, StudentProfile
+from config.serializers import UUIDHyperlinkedRelatedField
 
 
-class RequestSerializer(serializers.ModelSerializer):
-    created_by = serializers.SlugRelatedField(
-        slug_field='uuid', queryset=get_user_model().objects.all())
+class RequestSerializer(serializers.HyperlinkedModelSerializer):
+    created_by = UUIDHyperlinkedRelatedField(
+        view_name='user-detail',
+        queryset=get_user_model().objects.all(),
+    )
+
     requested_object = GenericRelatedField({
-        Course: serializers.SlugRelatedField(slug_field='uuid', queryset=Course.objects.all()),
-        StudentGroup: serializers.SlugRelatedField(slug_field='uuid', queryset=StudentGroup.objects.all()),
-        Timetable: serializers.SlugRelatedField(slug_field='uuid', queryset=Timetable.objects.all()),
-        Event: serializers.SlugRelatedField(slug_field='uuid', queryset=Event.objects.all()),
-        EventType: serializers.SlugRelatedField(slug_field='uuid', queryset=EventType.objects.all()),
+        Course: UUIDHyperlinkedRelatedField(
+            view_name='course-detail',
+            queryset=Course.objects.all(),
+        ),
+        StudentGroup: UUIDHyperlinkedRelatedField(
+            view_name='student-group-detail',
+            queryset=StudentGroup.objects.all(),
+        ),
+        Timetable: UUIDHyperlinkedRelatedField(
+            view_name='timetable-detail',
+            queryset=Timetable.objects.all(),
+        ),
+        Event: UUIDHyperlinkedRelatedField(
+            view_name='event-detail',
+            queryset=Event.objects.all(),
+        ),
+        EventType: UUIDHyperlinkedRelatedField(
+            view_name='event-type-detail',
+            queryset=EventType.objects.all(),
+        ),
     })
 
     class Meta:
         model = Request
-        fields = ('uuid', 'created_date', 'created_by', 'requested_object',)
+        fields = ('url', 'uuid', 'created_date', 'created_by',
+                  'requested_object',)
+        extra_kwargs = {
+            'url': {'lookup_field': 'uuid', }
+        }
 
 
-class ResponseSerializer(serializers.ModelSerializer):
-    created_by = serializers.SlugRelatedField(
-        slug_field='uuid', queryset=get_user_model().objects.all())
-    related_request = serializers.SlugRelatedField(
-        slug_field='uuid', queryset=Request.objects.all()
+class ResponseSerializer(serializers.HyperlinkedModelSerializer):
+    created_by = UUIDHyperlinkedRelatedField(
+        view_name='user-detail',
+        queryset=get_user_model().objects.all(),
+    )
+
+    related_request = UUIDHyperlinkedRelatedField(
+        view_name='request-detail',
+        queryset=Request.objects.all(),
     )
 
     class Meta:
         model = Response
-        fields = ('uuid', 'status', 'created_date', 'created_by',
+        fields = ('url', 'uuid', 'status', 'created_date', 'created_by',
                   'related_request', 'comment',)
+        extra_kwargs = {
+            'url': {'lookup_field': 'uuid', }
+        }
 
 
-class CourseSerializer(ModelSerializer):
-    instructors = serializers.SlugRelatedField(
-        slug_field='uuid',
+class CourseSerializer(serializers.HyperlinkedModelSerializer):
+    instructors = UUIDHyperlinkedRelatedField(
+        view_name='instructor-detail',
         queryset=InstructorProfile.objects.all(),
         many=True,
     )
 
-    student_groups = serializers.SlugRelatedField(
-        slug_field='uuid',
+    student_groups = UUIDHyperlinkedRelatedField(
+        view_name='student-detail',
         queryset=StudentGroup.objects.all(),
+        many=True,
+    )
+
+    timetables = UUIDHyperlinkedRelatedField(
+        view_name='timetable-detail',
+        read_only=True,
         many=True,
     )
 
     class Meta:
         model = Course
-        fields = ('uuid', 'code', 'title', 'syllabus',
-                  'instructors', 'student_groups',)
+        fields = ('url', 'uuid', 'code', 'title', 'syllabus', 'instructors',
+                  'student_groups', 'timetables',)
+        extra_kwargs = {
+            'url': {'lookup_field': 'uuid', }
+        }
 
 
-class StudentGroupSerializer(ModelSerializer):
-    students = serializers.SlugRelatedField(
-        slug_field='uuid',
+class StudentGroupSerializer(serializers.HyperlinkedModelSerializer):
+    students = UUIDHyperlinkedRelatedField(
+        view_name='student-detail',
         queryset=StudentProfile.objects.all(),
         many=True,
     )
 
     class Meta:
         model = StudentGroup
-        fields = ('uuid', 'code', 'students',)
+        fields = ('url', 'uuid', 'code', 'students',)
+        extra_kwargs = {
+            'url': {'view_name': 'student-group-detail', 'lookup_field': 'uuid', }
+        }
 
 
-class TimetableSerializer(ModelSerializer):
-    course = serializers.SlugRelatedField(
-        slug_field='uuid',
+class TimetableSerializer(serializers.HyperlinkedModelSerializer):
+    course = UUIDHyperlinkedRelatedField(
+        view_name='course-detail',
         queryset=Course.objects.all(),
     )
 
+    events = UUIDHyperlinkedRelatedField(
+        view_name='event-detail',
+        read_only=True,
+        many=True,
+    )
+
     class Meta:
+
         model = Timetable
-        fields = ('uuid', 'code', 'title', 'course', 'start_date', 'end_date',)
+        fields = ('url', 'uuid', 'code', 'title', 'course', 'start_date',
+                  'end_date', 'events',)
+        extra_kwargs = {
+            'url': {'lookup_field': 'uuid', }
+        }
 
 
-class EventDetailsSerializer(ModelSerializer):
-    instructor = serializers.SlugRelatedField(
-        slug_field='uuid',
+class EventDetailsSerializer(serializers.ModelSerializer):
+    instructor = UUIDHyperlinkedRelatedField(
+        view_name='instructor-detail',
         queryset=InstructorProfile.objects.all(),
     )
 
-    students = serializers.SlugRelatedField(
-        slug_field='uuid',
+    students = UUIDHyperlinkedRelatedField(
+        view_name='student-detail',
         queryset=StudentProfile.objects.all(),
         many=True,
     )
@@ -113,9 +164,9 @@ class NonPeriodicEventDetailsSerializer(EventDetailsSerializer):
             ('date',)
 
 
-class EventSerializer(ModelSerializer):
-    event_type = serializers.SlugRelatedField(
-        slug_field='uuid',
+class EventSerializer(serializers.HyperlinkedModelSerializer):
+    event_type = UUIDHyperlinkedRelatedField(
+        view_name='event-type-detail',
         queryset=EventType.objects.all(),
     )
 
@@ -128,19 +179,26 @@ class EventSerializer(ModelSerializer):
         many=True,
     )
 
-    timetable = serializers.SlugRelatedField(
-        slug_field='uuid',
+    timetable = UUIDHyperlinkedRelatedField(
+        view_name='timetable-detail',
         queryset=Timetable.objects.all(),
     )
 
     class Meta:
         model = Event
         depth = 1
-        fields = ('uuid', 'title', 'description', 'event_type', 'timetable',
-                  'periodic_event_details', 'non_periodic_event_details')
+        fields = ('url', 'uuid', 'title', 'description', 'event_type',
+                  'timetable', 'periodic_event_details',
+                  'non_periodic_event_details')
+        extra_kwargs = {
+            'url': {'lookup_field': 'uuid', }
+        }
 
 
-class EventTypeSerializer(ModelSerializer):
+class EventTypeSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = EventType
-        fields = ('uuid', 'title',)
+        fields = ('url', 'uuid', 'title',)
+        extra_kwargs = {
+            'url': {'view_name': 'event-type-detail', 'lookup_field': 'uuid', }
+        }
