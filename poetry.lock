@@ -129,6 +129,17 @@ django = ">=2.2"
 rest_framework_integration = ["djangorestframework (>=3.9,<4.0)"]
 
 [[package]]
+name = "django-cors-headers"
+version = "3.7.0"
+description = "django-cors-headers is a Django application for handling the server headers required for Cross-Origin Resource Sharing (CORS)."
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+Django = ">=2.2"
+
+[[package]]
 name = "django-crispy-forms"
 version = "1.11.2"
 description = "Best way to have Django DRY forms"
@@ -527,7 +538,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "d1ace6c55406ea30d516ec761dc987c27fa4aae853a9ab20e693c0d99b54295b"
+content-hash = "2f917037668c619cfae257df8c0057655ca63353b97383c49f9a26212c7170e5"
 
 [metadata.files]
 asgiref = [
@@ -622,6 +633,10 @@ django = [
 django-auto-prefetching = [
     {file = "django_auto_prefetching-0.1.9-py2.py3-none-any.whl", hash = "sha256:4fe760bef1ad2948d1c988710525bbd1f3adc52328da8703ba1de45cb1ba535d"},
     {file = "django_auto_prefetching-0.1.9.tar.gz", hash = "sha256:0b07be02a9f0d01251137a4d42b3025d400937b6c46f0d84999e00afdfe5e1c3"},
+]
+django-cors-headers = [
+    {file = "django-cors-headers-3.7.0.tar.gz", hash = "sha256:96069c4aaacace786a34ee7894ff680780ec2644e4268b31181044410fecd12e"},
+    {file = "django_cors_headers-3.7.0-py3-none-any.whl", hash = "sha256:1ac2b1213de75a251e2ba04448da15f99bcfcbe164288ae6b5ff929dc49b372f"},
 ]
 django-crispy-forms = [
     {file = "django-crispy-forms-1.11.2.tar.gz", hash = "sha256:88efa857ce6111bd696cc4f74057539a3456102fe9c3a3ece8868e1e4579e70a"},

@@ -37,6 +37,7 @@ AUTH_USER_MODEL = 'accounts.CustomUser'
 
 MIDDLEWARE = [
     'silk.middleware.SilkyMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
@@ -64,6 +65,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'generic_relations',
     'silk',
+    'corsheaders',
 
     'accounts.apps.AccountsConfig',
     'lms_core.apps.LmsCoreConfig',
@@ -169,3 +171,5 @@ ACCOUNT_USERNAME_REQUIRED = False
 
 SILKY_AUTHENTICATION = True
 SILKY_AUTHORISATION = True
+
+CORS_ORIGIN_ALLOW_ALL = True
