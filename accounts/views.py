@@ -6,7 +6,7 @@ from django_auto_prefetching import AutoPrefetchViewSetMixin
 from accounts.models import StudentProfile, InstructorProfile
 from accounts.serializers import UserSerializer, UserUpdateSerializer, GroupSerializer, PermissionSerializer, \
     StudentProfileSerializer, InstructorProfileSerializer
-from config.views import MultiSerializerMixin, UUIDLookupFieldMixin
+from common.views import MultiSerializerMixin, UUIDLookupFieldMixin
 
 
 class UserViewSet(viewsets.ModelViewSet, MultiSerializerMixin, UUIDLookupFieldMixin, AutoPrefetchViewSetMixin):

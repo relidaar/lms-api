@@ -6,7 +6,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 
 from accounts.models import InstructorProfile, StudentProfile
-from config.models import UUIDFieldMixin
+from common.models import UUIDFieldMixin
 
 
 class Request(UUIDFieldMixin, models.Model):

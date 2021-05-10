@@ -1,7 +1,7 @@
 from rest_framework import viewsets, mixins
 from django_auto_prefetching import AutoPrefetchViewSetMixin
 
-from config.views import MultiSerializerMixin, UUIDLookupFieldMixin
+from common.views import MultiSerializerMixin, UUIDLookupFieldMixin
 from lms_core.models import (
     Course, Event, Request, Response, StudentGroup, Timetable, EventType
 )

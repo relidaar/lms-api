@@ -4,7 +4,7 @@ from django.contrib.auth.models import Group, Permission
 from rest_framework import serializers
 
 from accounts.models import StudentProfile, InstructorProfile
-from config.serializers import UUIDHyperlinkedRelatedField
+from common.serializers import UUIDHyperlinkedRelatedField
 
 
 class CustomLoginSerializer(LoginSerializer):

@@ -7,7 +7,7 @@ from lms_core.models import (
     StudentGroup, Timetable, EventType,
 )
 from accounts.models import InstructorProfile, StudentProfile
-from config.serializers import UUIDHyperlinkedRelatedField
+from common.serializers import UUIDHyperlinkedRelatedField
 
 
 class RequestSerializer(serializers.HyperlinkedModelSerializer):

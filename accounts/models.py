@@ -9,7 +9,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from accounts.managers import CustomUserManager
-from config.models import UUIDFieldMixin
+from common.models import UUIDFieldMixin
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin, UUIDFieldMixin):
