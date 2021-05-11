@@ -19,26 +19,27 @@ from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
-urlpatterns = [
-    path('', SpectacularSwaggerView.as_view(url_name='schema')),
 
+docs_urls = [
     path('schema/', SpectacularAPIView.as_view(), name='schema'),
-    path('swagger/', SpectacularSwaggerView.as_view(url_name='schema'),
-         name='swagger'),
-    path('redoc/', SpectacularRedocView.as_view(url_name='schema'),
-         name='redoc'),
+    path('swagger/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger'),
+    path('redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
+]
 
-    path('silk/', include('silk.urls')),
-    path('api/v1/', include([
-        path('accounts/', include('accounts.urls')),
-        path('lms-core/', include('lms_core.urls')),
+api_v1_urls = [
+    path('accounts/', include('accounts.urls'), name='accounts'),
+    path('lms-core/', include('lms_core.urls'), name='lms_core'),
 
-        path('auth/', include([
-            path('', include('dj_rest_auth.urls')),
-            path('token/', TokenObtainPairView.as_view(),
-                 name='token_obtain_pair'),
-            path('token/refresh/', TokenRefreshView.as_view(),
-                 name='token_refresh'),
-        ]))
-    ])),
+    path('auth/', include([
+        path('', include('dj_rest_auth.urls'), name='dj_rest_auth'),
+        path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+        path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    ]))
+]
+
+urlpatterns = [
+    path('', SpectacularSwaggerView.as_view()),
+    path('api/v1/', include(api_v1_urls)),
+    path('docs/', include(docs_urls)),
+    path('silk/', include('silk.urls'), name='silk'),
 ]
