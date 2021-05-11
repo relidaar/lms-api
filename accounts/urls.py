@@ -11,5 +11,4 @@ router.register('students', StudentProfileViewSet, basename='student')
 router.register('instructors', InstructorProfileViewSet, basename='instructor')
 
 urlpatterns = [
-    path('', include('dj_rest_auth.urls')),
 ] + router.urls

@@ -38,6 +38,9 @@ django-silk==4.1.0; python_version >= "3.5" \
 django==3.1.8; python_version >= "3.6" \
     --hash=sha256:c348b3ddc452bf4b62361f0752f71a339140c777ebea3cdaaaa8fdb7f417a862 \
     --hash=sha256:f8393103e15ec2d2d313ccbb95a3f1da092f9f58d74ac1c61ca2ac0436ae1eac
+djangorestframework-simplejwt==4.6.0; python_version >= "3.7" \
+    --hash=sha256:bd587700b6ab34a6c6b12d426cce4fa580d57ef1952ad4ba3b79707784619ed3 \
+    --hash=sha256:7adc913ba0d2ed7f46e0b9bf6e86f9bd9248f1c4201722b732b8213e0ea66f9f
 djangorestframework==3.12.4; python_version >= "3.5" \
     --hash=sha256:6d1d59f623a5ad0509fe0d6bfe93cbdfe17b8116ebc8eda86d45f6e16e819aaf \
     --hash=sha256:f747949a8ddac876e879190df194b925c177cdeb725a099db1460872f7c0a7f2
@@ -156,6 +159,9 @@ pycodestyle==2.7.0; python_version >= "3.5" and python_full_version < "3.0.0" or
 pygments==2.8.1; python_version >= "3.5" \
     --hash=sha256:534ef71d539ae97d4c3a4cf7d6f110f214b0e687e92f9cb9d2a3b0d3101289c8 \
     --hash=sha256:2656e1a6edcdabf4275f9a3640db59fd5de107d88e8663c5d4e9a0fa62f77f94
+pyjwt==2.1.0; python_version >= "3.7" \
+    --hash=sha256:934d73fbba91b0483d3857d1aff50e96b2a892384ee2c17417ed3203f173fca1 \
+    --hash=sha256:fba44e7898bbca160a2b2b501f492824fc8382485d3a6f11ba5d0c1937ce6130
 pyrsistent==0.17.3; python_version >= "3.6" \
     --hash=sha256:2e636185d9eb976a18a8a8e96efce62f2905fea90041958d8cc2a189756ebf3e
 python-dateutil==2.8.1; python_version >= "3.5" and python_full_version < "3.0.0" or python_full_version >= "3.3.0" and python_version >= "3.5" \

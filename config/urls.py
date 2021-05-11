@@ -15,7 +15,10 @@ Including another URLconf
 """
 from django.urls import path, include
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
-
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
 urlpatterns = [
     path('', SpectacularSwaggerView.as_view(url_name='schema')),
 
@@ -29,6 +32,13 @@ urlpatterns = [
     path('api/v1/', include([
         path('accounts/', include('accounts.urls')),
         path('lms-core/', include('lms_core.urls')),
-    ])),
 
+        path('auth/', include([
+            path('', include('dj_rest_auth.urls')),
+            path('token/', TokenObtainPairView.as_view(),
+                 name='token_obtain_pair'),
+            path('token/refresh/', TokenRefreshView.as_view(),
+                 name='token_refresh'),
+        ]))
+    ])),
 ]
