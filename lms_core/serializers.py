@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from generic_relations.relations import GenericRelatedField
 from rest_framework import serializers
+from drf_writable_nested import serializers as nested_serializers
 
 from lms_core.models import (
     Course, Event, NonPeriodicEventDetails, PeriodicEventDetails, Request, Response,
@@ -76,7 +77,7 @@ class CourseSerializer(serializers.HyperlinkedModelSerializer):
     )
 
     student_groups = UUIDHyperlinkedRelatedField(
-        view_name='student-detail',
+        view_name='student-group-detail',
         queryset=StudentGroup.objects.all(),
         many=True,
     )
@@ -124,7 +125,6 @@ class TimetableSerializer(serializers.HyperlinkedModelSerializer):
     )
 
     class Meta:
-
         model = Timetable
         fields = ('url', 'uuid', 'code', 'title', 'course', 'start_date',
                   'end_date', 'events',)
@@ -164,20 +164,14 @@ class NonPeriodicEventDetailsSerializer(EventDetailsSerializer):
             ('date',)
 
 
-class EventSerializer(serializers.HyperlinkedModelSerializer):
+class EventSerializer(serializers.HyperlinkedModelSerializer, nested_serializers.NestedCreateMixin, nested_serializers.NestedUpdateMixin):
     event_type = UUIDHyperlinkedRelatedField(
         view_name='event-type-detail',
         queryset=EventType.objects.all(),
     )
 
-    periodic_event_details = PeriodicEventDetailsSerializer(
-        source='periodic_event_details_set',
-        many=True,
-    )
-    non_periodic_event_details = NonPeriodicEventDetailsSerializer(
-        source='non_periodic_event_details_set',
-        many=True,
-    )
+    periodic_event_details = PeriodicEventDetailsSerializer(many=True,)
+    non_periodic_event_details = NonPeriodicEventDetailsSerializer(many=True,)
 
     timetable = UUIDHyperlinkedRelatedField(
         view_name='timetable-detail',
@@ -193,6 +187,31 @@ class EventSerializer(serializers.HyperlinkedModelSerializer):
         extra_kwargs = {
             'url': {'lookup_field': 'uuid', }
         }
+
+    # def create(self, validated_data):
+    #     periodic_events = validated_data.pop('periodic_event_details')
+    #     non_periodic_events = validated_data.pop('non_periodic_event_details')
+    #     event = Event.objects.create(**validated_data)
+
+    #     for details in periodic_events:
+    #         PeriodicEventDetails.objects.create(event=event, **details)
+
+    #     for details in non_periodic_events:
+    #         NonPeriodicEventDetails.objects.create(event=event, **details)
+
+    #     return event
+
+    # def update(self, instance, validated_data):
+    #     periodic_events = validated_data.pop('periodic_event_details')
+    #     non_periodic_events = validated_data.pop('non_periodic_event_details')
+
+    #     for key, value in validated_data.items():
+    #         setattr(instance, key, value)
+    #     instance.save()
+
+    #     p_events = instance.periodic_event_details.all()
+    #     np_events = instance.non_periodic_event_details.all()
+    #     for details in periodic_events:
 
 
 class EventTypeSerializer(serializers.HyperlinkedModelSerializer):

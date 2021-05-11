@@ -38,7 +38,7 @@ class Response(UUIDFieldMixin, models.Model):
 class StudentGroup(UUIDFieldMixin, models.Model):
     """Represent an academic group of students."""
     code = models.CharField(max_length=10, unique=True)
-    students = models.ManyToManyField(StudentProfile)
+    students = models.ManyToManyField(StudentProfile, related_name='groups')
 
     def __str__(self):
         return self.code
@@ -49,9 +49,10 @@ class Course(UUIDFieldMixin, models.Model):
     code = models.CharField(max_length=10, unique=True)
     title = models.CharField(max_length=255)
     syllabus = models.TextField(blank=True)
-    instructors = models.ManyToManyField(
-        InstructorProfile, related_name='instructors')
-    student_groups = models.ManyToManyField(StudentGroup)
+    instructors = models.ManyToManyField(InstructorProfile,
+                                         related_name='instructed_courses')
+    student_groups = models.ManyToManyField(StudentGroup,
+                                            related_name='joined_courses')
 
     def __str__(self):
         return f'{self.code} - {self.title}'
@@ -95,7 +96,6 @@ class EventDetails(UUIDFieldMixin, models.Model):
     end_time = models.TimeField(verbose_name='Event end time')
     instructor = models.ForeignKey(InstructorProfile, on_delete=models.CASCADE)
     students = models.ManyToManyField(StudentProfile)
-    event = models.ForeignKey(Event, on_delete=models.CASCADE)
 
     class Meta:
         abstract = True
@@ -121,8 +121,18 @@ class PeriodicEventDetails(EventDetails):
         max_length=2, choices=WeekDay.choices, default=WeekDay.Monday)
     repeat_type = models.CharField(
         max_length=1, choices=RepeatType.choices, default=RepeatType.Weekly)
+    event = models.ForeignKey(
+        Event,
+        on_delete=models.CASCADE,
+        related_name='periodic_event_details'
+    )
 
 
 class NonPeriodicEventDetails(EventDetails):
     """Represent details for non-periodic course events."""
     date = models.DateTimeField()
+    event = models.ForeignKey(
+        Event,
+        on_delete=models.CASCADE,
+        related_name='non_periodic_event_details'
+    )

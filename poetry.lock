@@ -245,6 +245,14 @@ PyYAML = ">=5.1"
 uritemplate = ">=2.0.0"
 
 [[package]]
+name = "drf-writable-nested"
+version = "0.6.2"
+description = "Writable nested helpers for django-rest-framework's serializers"
+category = "main"
+optional = false
+python-versions = ">=3.5"
+
+[[package]]
 name = "gprof2dot"
 version = "2021.2.21"
 description = "Generate a dot graph from the output of several profilers."
@@ -572,7 +580,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "5c10cbc79dacad81c293facafa27e953a7c3a29d0408dd091e24fab4ad8620ad"
+content-hash = "d1972150d40b84b9fcaa25dff44ef2b6bd556461966220d379246fdc31fe3eae"
 
 [metadata.files]
 asgiref = [
@@ -702,6 +710,9 @@ djangorestframework-simplejwt = [
 drf-spectacular = [
     {file = "drf-spectacular-0.15.1.tar.gz", hash = "sha256:ae754d3be0ef059f96c128d664855478ff8a9dca2fc57ee51ed74cb82028e3d7"},
     {file = "drf_spectacular-0.15.1-py2.py3-none-any.whl", hash = "sha256:24a907774bc3fffcbb381b8c4cd5992494d7faaa5ad2b7ccaf345db18b46faf4"},
+]
+drf-writable-nested = [
+    {file = "drf_writable_nested-0.6.2-py3-none-any.whl", hash = "sha256:bb413286bd5ebf943460ba7c2dc177d572d6447d5287228cc763062c5a12e3d6"},
 ]
 gprof2dot = [
     {file = "gprof2dot-2021.2.21.tar.gz", hash = "sha256:1223189383b53dcc8ecfd45787ac48c0ed7b4dbc16ee8b88695d053eea1acabf"},

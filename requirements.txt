@@ -47,6 +47,8 @@ djangorestframework==3.12.4; python_version >= "3.5" \
 drf-spectacular==0.15.1; python_version >= "3.6" \
     --hash=sha256:ae754d3be0ef059f96c128d664855478ff8a9dca2fc57ee51ed74cb82028e3d7 \
     --hash=sha256:24a907774bc3fffcbb381b8c4cd5992494d7faaa5ad2b7ccaf345db18b46faf4
+drf-writable-nested==0.6.2; python_version >= "3.5" \
+    --hash=sha256:bb413286bd5ebf943460ba7c2dc177d572d6447d5287228cc763062c5a12e3d6
 gprof2dot==2021.2.21; python_version >= "3.5" \
     --hash=sha256:1223189383b53dcc8ecfd45787ac48c0ed7b4dbc16ee8b88695d053eea1acabf
 gunicorn==20.1.0; python_version >= "3.5" \
