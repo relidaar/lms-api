@@ -9,6 +9,7 @@ from lms_core.serializers import (
     EventSerializer, CourseSerializer, EventTypeSerializer, RequestSerializer,
     ResponseSerializer, TimetableSerializer, StudentGroupSerializer
 )
+from lms_core import filters
 
 
 class RequestViewSet(UUIDLookupFieldMixin, viewsets.ReadOnlyModelViewSet, mixins.CreateModelMixin, AutoPrefetchViewSetMixin):
@@ -28,7 +29,7 @@ class CourseViewSet(viewsets.ModelViewSet, MultiSerializerMixin, UUIDLookupField
     serializers = {
         'default': CourseSerializer,
     }
-    filterset_fields = ('code', 'title', 'instructors', 'student_groups',)
+    filterset_class = filters.CourseFilter
     search_fields = ('code', 'title',)
 
 
@@ -37,7 +38,7 @@ class StudentGroupViewSet(viewsets.ModelViewSet, MultiSerializerMixin, UUIDLooku
     serializers = {
         'default': StudentGroupSerializer,
     }
-    filterset_fields = ('code', 'students',)
+    filterset_class = filters.StudentGroupFilter
     search_fields = ('code',)
 
 
@@ -46,20 +47,17 @@ class TimetableViewSet(viewsets.ModelViewSet, MultiSerializerMixin, UUIDLookupFi
     serializers = {
         'default': TimetableSerializer,
     }
-    filterset_fields = ('code', 'title', 'course', 'course__code',
-                        'course__title', 'start_date', 'end_date',)
+    filterset_class = filters.TimetableFilter
     search_fields = ('code', 'title',)
 
 
 class EventViewSet(viewsets.ModelViewSet, MultiSerializerMixin, UUIDLookupFieldMixin, AutoPrefetchViewSetMixin):
     queryset = Event.objects.all()
-    filterset_fields = ('title', 'event_type', 'event_type__title', 'timetable',
-                        'timetable__code',)
-
-    search_fields = ('title',)
     serializers = {
         'default': EventSerializer,
     }
+    filterset_class = filters.EventFilter
+    search_fields = ('title',)
 
 
 class EventTypeViewSet(viewsets.ModelViewSet, MultiSerializerMixin, UUIDLookupFieldMixin, AutoPrefetchViewSetMixin):
