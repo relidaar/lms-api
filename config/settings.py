@@ -142,7 +142,7 @@ REST_FRAMEWORK = {
         'common.permissions.CustomDjangoModelPermissions',
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ],
     'DEFAULT_FILTER_BACKENDS': [
@@ -157,6 +157,9 @@ REST_FRAMEWORK = {
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 SITE_ID = 1
 
+REST_USE_JWT = True
+JWT_AUTH_COOKIE = 'lms-auth'
+JWT_AUTH_REFRESH_COOKIE = 'lms-refresh-token'
 REST_AUTH_SERIALIZERS = {
     'LOGIN_SERIALIZER': 'accounts.serializers.CustomLoginSerializer',
     'USER_DETAILS_SERIALIZER': 'accounts.serializers.UserSerializer',
