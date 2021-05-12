@@ -1,5 +1,3 @@
-import uuid
-
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
 from django.core.validators import validate_email
@@ -75,3 +73,12 @@ class StudentProfile(UserProfile):
     class Meta:
         verbose_name = _('student')
         verbose_name_plural = _('students')
+
+
+class StudentGroup(UUIDFieldMixin, models.Model):
+    """Represent an academic group of students."""
+    code = models.CharField(max_length=10, unique=True)
+    students = models.ManyToManyField(StudentProfile, related_name='groups')
+
+    def __str__(self):
+        return self.code

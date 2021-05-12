@@ -1,47 +1,8 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from django.utils import timezone
-from django.contrib.auth import get_user_model
-from django.contrib.contenttypes.fields import GenericForeignKey
-from django.contrib.contenttypes.models import ContentType
 
-from accounts.models import InstructorProfile, StudentProfile
+from accounts.models import InstructorProfile, StudentProfile, StudentGroup
 from common.models import UUIDFieldMixin
-
-
-class Request(UUIDFieldMixin, models.Model):
-    """Represent a permission request."""
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    object_id = models.PositiveIntegerField()
-    requested_object = GenericForeignKey('content_type', 'object_id',)
-    created_date = models.DateTimeField(default=timezone.now, editable=False)
-    created_by = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL,
-                                   null=True,)
-
-
-class Response(UUIDFieldMixin, models.Model):
-    """Represent a permission response."""
-    class RequestStatus(models.TextChoices):
-        InProcessing = 'P', _('InProcessing')
-        Approved = 'A', _('Approved')
-        Declined = 'D', _('Declined')
-
-    status = models.CharField(max_length=1, choices=RequestStatus.choices,
-                              default=RequestStatus.InProcessing)
-    related_request = models.OneToOneField(Request, on_delete=models.CASCADE)
-    comment = models.TextField(blank=True,)
-    created_date = models.DateTimeField(default=timezone.now, editable=False)
-    created_by = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL,
-                                   null=True,)
-
-
-class StudentGroup(UUIDFieldMixin, models.Model):
-    """Represent an academic group of students."""
-    code = models.CharField(max_length=10, unique=True)
-    students = models.ManyToManyField(StudentProfile, related_name='groups')
-
-    def __str__(self):
-        return self.code
 
 
 class Course(UUIDFieldMixin, models.Model):
@@ -49,10 +10,14 @@ class Course(UUIDFieldMixin, models.Model):
     code = models.CharField(max_length=10, unique=True)
     title = models.CharField(max_length=255)
     syllabus = models.TextField(blank=True)
-    instructors = models.ManyToManyField(InstructorProfile,
-                                         related_name='instructed_courses')
-    student_groups = models.ManyToManyField(StudentGroup,
-                                            related_name='joined_courses')
+    instructors = models.ManyToManyField(
+        InstructorProfile,
+        related_name='instructed_courses',
+    )
+    student_groups = models.ManyToManyField(
+        StudentGroup,
+        related_name='joined_courses',
+    )
 
     def __str__(self):
         return f'{self.code} - {self.title}'
@@ -63,7 +28,10 @@ class Timetable(UUIDFieldMixin, models.Model):
     code = models.CharField(max_length=10, unique=True)
     title = models.CharField(max_length=255, blank=True)
     course = models.ForeignKey(
-        Course, on_delete=models.CASCADE, related_name='timetables')
+        Course,
+        on_delete=models.CASCADE,
+        related_name='timetables',
+    )
     start_date = models.DateField(verbose_name='Course start date')
     end_date = models.DateField(verbose_name='Course end date')
 
@@ -118,9 +86,15 @@ class PeriodicEventDetails(EventDetails):
         Odd = 'O', _('Odd')
 
     weekday = models.CharField(
-        max_length=2, choices=WeekDay.choices, default=WeekDay.Monday)
+        choices=WeekDay.choices,
+        default=WeekDay.Monday,
+        max_length=2,
+    )
     repeat_type = models.CharField(
-        max_length=1, choices=RepeatType.choices, default=RepeatType.Weekly)
+        choices=RepeatType.choices,
+        default=RepeatType.Weekly,
+        max_length=1,
+    )
     event = models.ForeignKey(
         Event,
         on_delete=models.CASCADE,

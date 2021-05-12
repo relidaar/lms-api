@@ -67,8 +67,10 @@ INSTALLED_APPS = [
     'silk',
     'corsheaders',
 
+    'common.apps.CommonConfig',
+    'management.apps.ManagementConfig',
     'accounts.apps.AccountsConfig',
-    'lms_core.apps.LmsCoreConfig',
+    'education.apps.EducationConfig',
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -161,11 +163,11 @@ REST_USE_JWT = True
 JWT_AUTH_COOKIE = 'lms-auth'
 JWT_AUTH_REFRESH_COOKIE = 'lms-refresh-token'
 REST_AUTH_SERIALIZERS = {
-    'LOGIN_SERIALIZER': 'accounts.serializers.CustomLoginSerializer',
-    'USER_DETAILS_SERIALIZER': 'accounts.serializers.UserSerializer',
+    'LOGIN_SERIALIZER': 'api.accounts.serializers.CustomLoginSerializer',
+    'USER_DETAILS_SERIALIZER': 'api.accounts.serializers.UserSerializer',
 }
 
-LOGIN_URL = '/api/v1/accounts/login/'
+LOGIN_URL = '/api/v1/auth/login/'
 
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None

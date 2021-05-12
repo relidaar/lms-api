@@ -2,7 +2,15 @@ from django_filters import rest_framework as filters
 from django.db.models import Q
 
 from accounts.models import InstructorProfile, StudentProfile
-from lms_core.models import Course, Event, EventType, NonPeriodicEventDetails, PeriodicEventDetails, StudentGroup, Timetable
+from education.models import (
+    Course,
+    Event,
+    EventType,
+    NonPeriodicEventDetails,
+    PeriodicEventDetails,
+    StudentGroup,
+    Timetable,
+)
 
 
 class CourseFilter(filters.FilterSet):
@@ -40,32 +48,6 @@ class CourseFilter(filters.FilterSet):
             instructor = instructors.first()
             return parent.filter(instructors=instructor)
         return parent
-
-
-class StudentGroupFilter(filters.FilterSet):
-    students = filters.ModelMultipleChoiceFilter(
-        label='Students',
-        field_name='uuid',
-        to_field_name='uuid',
-        queryset=StudentProfile.objects.all(),
-    )
-
-    @property
-    def qs(self):
-        parent = super().qs
-        user = getattr(self.request, 'user', None)
-
-        students = StudentProfile.objects.filter(user=user)
-
-        if not students:
-            return parent
-
-        student = students.first()
-        return parent.filter(students=student)
-
-    class Meta:
-        model = StudentGroup
-        fields = ('code', 'students',)
 
 
 class TimetableFilter(filters.FilterSet):

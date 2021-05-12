@@ -3,10 +3,18 @@ from django.contrib.auth.models import Permission, Group
 from rest_framework import viewsets
 from django_auto_prefetching import AutoPrefetchViewSetMixin
 
-from accounts.models import StudentProfile, InstructorProfile
-from accounts.serializers import UserSerializer, UserUpdateSerializer, GroupSerializer, PermissionSerializer, \
-    StudentProfileSerializer, InstructorProfileSerializer
-from common.views import MultiSerializerMixin, UUIDLookupFieldMixin
+from accounts.models import StudentProfile, InstructorProfile, StudentGroup
+from api.accounts.serializers import (
+    UserSerializer,
+    UserUpdateSerializer,
+    GroupSerializer,
+    PermissionSerializer,
+    StudentProfileSerializer,
+    InstructorProfileSerializer,
+    StudentGroupSerializer,
+)
+from api.common.views import MultiSerializerMixin, UUIDLookupFieldMixin
+from api.accounts.filters import InstructorProfileFilter, StudentGroupFilter, StudentProfileFilter
 
 
 class UserViewSet(viewsets.ModelViewSet, MultiSerializerMixin, UUIDLookupFieldMixin, AutoPrefetchViewSetMixin):
@@ -38,7 +46,7 @@ class StudentProfileViewSet(viewsets.ModelViewSet, MultiSerializerMixin, UUIDLoo
     serializers = {
         'default': StudentProfileSerializer,
     }
-    filterset_fields = ('user', 'user__full_name', 'user__email',)
+    filterset_class = StudentProfileFilter
 
 
 class InstructorProfileViewSet(viewsets.ModelViewSet, MultiSerializerMixin, UUIDLookupFieldMixin, AutoPrefetchViewSetMixin):
@@ -46,4 +54,13 @@ class InstructorProfileViewSet(viewsets.ModelViewSet, MultiSerializerMixin, UUID
     serializers = {
         'default': InstructorProfileSerializer,
     }
-    filterset_fields = ('user', 'user__full_name', 'user__email',)
+    filterset_class = InstructorProfileFilter
+
+
+class StudentGroupViewSet(viewsets.ModelViewSet, MultiSerializerMixin, UUIDLookupFieldMixin, AutoPrefetchViewSetMixin):
+    queryset = StudentGroup.objects.all()
+    serializers = {
+        'default': StudentGroupSerializer,
+    }
+    filterset_class = StudentGroupFilter
+    search_fields = ('code',)

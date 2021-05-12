@@ -3,8 +3,8 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group, Permission
 from rest_framework import serializers
 
-from accounts.models import StudentProfile, InstructorProfile
-from common.serializers import UUIDHyperlinkedRelatedField
+from accounts.models import StudentProfile, InstructorProfile, StudentGroup
+from api.common.serializers import UUIDHyperlinkedRelatedField
 
 
 class CustomLoginSerializer(LoginSerializer):
@@ -23,11 +23,16 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
     """Custom serializer for user model."""
     class Meta:
         model = get_user_model()
-        fields = ('url', 'uuid', 'full_name', 'email', 'password',
-                  'is_staff', 'is_active', 'groups',)
+        fields = (
+            'url', 'uuid', 'full_name', 'email', 'password', 'is_staff',
+            'is_active', 'groups',
+        )
         extra_kwargs = {
             'password': {'write_only': True},
-            'url': {'view_name': 'user-detail', 'lookup_field': 'uuid', },
+            'url': {
+                'view_name': 'user-detail',
+                'lookup_field': 'uuid',
+            },
         }
 
     def create(self, validated_data):
@@ -47,7 +52,10 @@ class UserUpdateSerializer(serializers.HyperlinkedModelSerializer):
         model = get_user_model()
         fields = ('url', 'uuid', 'full_name', 'email', 'groups',)
         extra_kwargs = {
-            'url': {'view_name': 'user-detail', 'lookup_field': 'uuid', },
+            'url': {
+                'view_name': 'user-detail',
+                'lookup_field': 'uuid',
+            },
         }
 
     def update(self, instance, validated_data):
@@ -98,7 +106,10 @@ class StudentProfileSerializer(UserProfileSerializer):
         model = StudentProfile
         fields = UserProfileSerializer.Meta.fields + ()
         extra_kwargs = {
-            'url': {'view_name': 'student-detail', 'lookup_field': 'uuid', },
+            'url': {
+                'view_name': 'student-detail',
+                'lookup_field': 'uuid',
+            },
         }
 
 
@@ -108,5 +119,26 @@ class InstructorProfileSerializer(UserProfileSerializer):
         model = InstructorProfile
         fields = UserProfileSerializer.Meta.fields + ()
         extra_kwargs = {
-            'url': {'view_name': 'instructor-detail', 'lookup_field': 'uuid', },
+            'url': {
+                'view_name': 'instructor-detail',
+                'lookup_field': 'uuid',
+            },
+        }
+
+
+class StudentGroupSerializer(serializers.HyperlinkedModelSerializer):
+    students = UUIDHyperlinkedRelatedField(
+        view_name='student-detail',
+        queryset=StudentProfile.objects.all(),
+        many=True,
+    )
+
+    class Meta:
+        model = StudentGroup
+        fields = ('url', 'uuid', 'code', 'students',)
+        extra_kwargs = {
+            'url': {
+                'view_name': 'student-group-detail',
+                'lookup_field': 'uuid',
+            }
         }
