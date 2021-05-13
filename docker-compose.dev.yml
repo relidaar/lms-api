@@ -28,7 +28,7 @@ services:
     volumes:
       - web-static:/code/static
     ports:
-      - 8000:80
+      - 80:80
     depends_on:
       - web
 

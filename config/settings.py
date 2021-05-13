@@ -11,10 +11,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 import os
 from pathlib import Path
-from environ import Env
-
-env = Env()
-env.read_env()
+import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -22,14 +19,19 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env('DJANGO_SECRET_KEY',
-                 default='o@@xi3*c(%p1-qgu=@07@9&$j@h-u8__j2w&wq8fdpk7x96jav')
+env = environ.Env()
+environ.Env.read_env()
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env('DJANGO_DEBUG', default=True)
+DEBUG = env('DEBUG', default=True)
 
-ALLOWED_HOSTS = env('DJANGO_ALLOWED_HOSTS', default='*').split()
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = env(
+    'SECRET_KEY',
+    default='o@@xi3*c(%p1-qgu=@07@9&$j@h-u8__j2w&wq8fdpk7x96jav'
+)
+
+ALLOWED_HOSTS = env('ALLOWED_HOSTS', default='*').split()
 
 # Application definition
 
@@ -48,6 +50,10 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+if env('ENABLE_SECURE_PROXY_SSL_HEADER', default=False):
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_SSL_REDIRECT = env('SECURE_SSL_REDIRECT', default=False)
 
 INSTALLED_APPS = [
     'django.contrib.admin',
