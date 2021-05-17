@@ -1,4 +1,6 @@
 from django.db import models
+from django.db.models.deletion import SET_NULL
+from django.db.models.fields.related import ForeignKey
 from django.utils.translation import gettext_lazy as _
 
 from accounts.models import InstructorProfile, StudentProfile, StudentGroup
@@ -39,6 +41,108 @@ class Timetable(UUIDFieldMixin, models.Model):
         return f'{self.title} ({self.course.code} course)'
 
 
+class TimetableItem(UUIDFieldMixin, models.Model):
+    """Basic model for course events."""
+    title = models.CharField(max_length=255)
+    description = models.TextField(blank=True)
+    timetable = models.ForeignKey(
+        Timetable,
+        on_delete=models.CASCADE,
+        related_name='%(class)s',
+    )
+    start_time = models.TimeField(verbose_name='Course event start time')
+    end_time = models.TimeField(verbose_name='Course event end time')
+    instructor = models.ForeignKey(
+        InstructorProfile,
+        on_delete=models.SET_NULL,
+        null=True,
+    )
+    students = models.ManyToManyField(StudentProfile)
+
+    class Meta:
+        abstract = True
+
+
+class PeriodicTimetableItem(TimetableItem):
+    """Basic model for periodic timetable items."""
+    class WeekDay(models.TextChoices):
+        Monday = 'MO', _('Monday')
+        Tuesday = 'TU', _('Tuesday')
+        Wednesday = 'WE', _('Wednesday')
+        Thursday = 'TH', _('Thursday')
+        Friday = 'FR', _('Friday')
+        Saturday = 'SA', _('Saturday')
+        Sunday = 'SU', _('Sunday')
+
+    class RepeatType(models.TextChoices):
+        Weekly = 'W', _('Weekly')
+        Even = 'E', _('Even')
+        Odd = 'O', _('Odd')
+
+    weekday = models.CharField(
+        choices=WeekDay.choices,
+        default=WeekDay.Monday,
+        max_length=2,
+    )
+    repeat_type = models.CharField(
+        choices=RepeatType.choices,
+        default=RepeatType.Weekly,
+        max_length=1,
+    )
+
+    class Meta:
+        abstract = True
+
+
+class NonPeriodicTimetableItem(TimetableItem):
+    """Basic model for non-periodic timetable items."""
+    date = models.DateTimeField()
+
+    class Meta:
+        abstract = True
+
+
+class Assignment(NonPeriodicTimetableItem):
+    """Represent a course assignment related to event."""
+
+    def __str__(self) -> str:
+        return self.title
+
+
+class Solution(UUIDFieldMixin, models.Model):
+    """Represent student's solution to course assignment."""
+    assignment = models.ForeignKey(
+        Assignment,
+        related_name='solutions',
+        on_delete=models.CASCADE,
+    )
+    student = models.ForeignKey(
+        StudentProfile,
+        related_name='solutions',
+        on_delete=models.SET_NULL,
+        null=True,
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    comment = models.TextField(blank=True)
+
+
+class Grade(UUIDFieldMixin, models.Model):
+    """Represent a response to the student's solution."""
+    solution = models.OneToOneField(
+        Solution,
+        related_name='grades',
+        on_delete=models.CASCADE,
+    )
+    instructor = models.ForeignKey(
+        InstructorProfile,
+        related_name='grades',
+        on_delete=models.SET_NULL,
+        null=True,
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    comment = models.TextField(blank=True)
+
+
 class EventType(UUIDFieldMixin, models.Model):
     """Represent types of timetable events."""
     title = models.CharField(max_length=255, unique=True)
@@ -62,7 +166,11 @@ class EventDetails(UUIDFieldMixin, models.Model):
     """Basic details for course event."""
     start_time = models.TimeField(verbose_name='Event start time')
     end_time = models.TimeField(verbose_name='Event end time')
-    instructor = models.ForeignKey(InstructorProfile, on_delete=models.CASCADE)
+    instructor = models.ForeignKey(
+        InstructorProfile,
+        on_delete=models.SET_NULL,
+        null=True,
+    )
     students = models.ManyToManyField(StudentProfile)
 
     class Meta:
