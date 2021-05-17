@@ -56,8 +56,9 @@ class TimetableItem(UUIDFieldMixin, models.Model):
         InstructorProfile,
         on_delete=models.SET_NULL,
         null=True,
+        related_name='%(class)s',
     )
-    students = models.ManyToManyField(StudentProfile)
+    students = models.ManyToManyField(StudentProfile, related_name='%(class)s')
 
     class Meta:
         abstract = True
