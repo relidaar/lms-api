@@ -3,17 +3,41 @@ from drf_writable_nested import serializers as nested_serializers
 
 from education.models import (
     Assignment,
+    AssignmentContent,
     Course,
+    CourseContent,
     Event,
     Grade,
     NonPeriodicEventDetails,
     PeriodicEventDetails,
     Solution,
+    SolutionContent,
     Timetable,
     EventType,
 )
 from accounts.models import InstructorProfile, StudentProfile, StudentGroup
-from api.common.serializers import UUIDHyperlinkedRelatedField
+from api.common.serializers import ContentSerializer, UUIDHyperlinkedRelatedField
+
+
+class CourseContentSerializer(ContentSerializer):
+    class Meta:
+        model = CourseContent
+        fields = ContentSerializer.Meta.fields + ()
+        extra_kwargs = ContentSerializer.Meta.extra_kwargs
+
+
+class AssignmentContentSerializer(ContentSerializer):
+    class Meta:
+        model = AssignmentContent
+        fields = ContentSerializer.Meta.fields + ()
+        extra_kwargs = ContentSerializer.Meta.extra_kwargs
+
+
+class SolutionContentSerializer(ContentSerializer):
+    class Meta:
+        model = SolutionContent
+        fields = ContentSerializer.Meta.fields + ()
+        extra_kwargs = ContentSerializer.Meta.extra_kwargs
 
 
 class CourseSerializer(serializers.HyperlinkedModelSerializer):
@@ -35,11 +59,13 @@ class CourseSerializer(serializers.HyperlinkedModelSerializer):
         many=True,
     )
 
+    contents = ContentSerializer(many=True,)
+
     class Meta:
         model = Course
         fields = (
             'url', 'uuid', 'code', 'title', 'syllabus', 'instructors',
-            'student_groups', 'timetables',
+            'student_groups', 'timetables', 'contents',
         )
         extra_kwargs = {
             'url': {
@@ -117,9 +143,13 @@ class AssignmentSerializer(NonPeriodicTimetableItemSerializer):
         many=True,
     )
 
+    contents = AssignmentContentSerializer(many=True,)
+
     class Meta:
         model = Assignment
-        fields = NonPeriodicEventDetails.Meta.fields + ('solutions',)
+        fields = NonPeriodicTimetableItemSerializer.Meta.fields + (
+            'solutions', 'contents',
+        )
         extra_kwargs = {
             'url': {
                 'lookup_field': 'uuid',
@@ -130,7 +160,7 @@ class AssignmentSerializer(NonPeriodicTimetableItemSerializer):
 class SolutionSerializer(serializers.HyperlinkedModelSerializer):
     assignment = UUIDHyperlinkedRelatedField(
         view_name='assignment-detail',
-        queryset=Assignment.object.all(),
+        queryset=Assignment.objects.all(),
     )
 
     student = UUIDHyperlinkedRelatedField(
@@ -144,11 +174,13 @@ class SolutionSerializer(serializers.HyperlinkedModelSerializer):
         many=True,
     )
 
+    contents = SolutionContentSerializer(many=True,)
+
     class Meta:
         model = Solution
         fields = (
             'url', 'uuid', 'assignment', 'student', 'created_at', 'comment',
-            'grades',
+            'grades', 'contents',
         )
 
 

@@ -42,11 +42,6 @@ class Content(UUIDFieldMixin, models.Model):
 
 class ContentItem(UUIDFieldMixin, models.Model):
     """Basic model for content items."""
-    owner = models.ForeignKey(
-        get_user_model(),
-        related_name='%(class)s_related',
-        on_delete=models.CASCADE,
-    )
     title = models.CharField(max_length=250)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -58,17 +53,17 @@ class ContentItem(UUIDFieldMixin, models.Model):
         return self.title
 
 
-class Text(ContentItem):
+class TextContentItem(ContentItem):
     content = models.TextField()
 
 
-class File(ContentItem):
+class FileContentItem(ContentItem):
     file = models.FileField(upload_to='files')
 
 
-class Image(ContentItem):
+class ImageContentItem(ContentItem):
     file = models.FileField(upload_to='images')
 
 
-class Video(ContentItem):
+class VideoContentItem(ContentItem):
     url = models.URLField()
