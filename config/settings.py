@@ -141,8 +141,13 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_FOLDER_NAME = 'staticfiles'
+STATIC_URL = f'/{STATIC_FOLDER_NAME}/'
+STATIC_ROOT = os.path.join(BASE_DIR, STATIC_FOLDER_NAME)
+
+MEDIA_FOLDER_NAME = 'mediafiles'
+MEDIA_URL = f'/{MEDIA_FOLDER_NAME}/'
+MEDIA_ROOT = os.path.join(BASE_DIR, MEDIA_FOLDER_NAME)
 
 REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',

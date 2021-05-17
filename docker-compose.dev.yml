@@ -8,7 +8,8 @@ services:
              python manage.py migrate &&
              gunicorn config.wsgi:application -b :8000"
     volumes:
-      - web-static:/code/static
+      - web-static:/code/staticfiles
+      - web-media:/code/mediafiles
     env_file:
       - ./envs/.env.dev
     expose:
@@ -26,7 +27,8 @@ services:
   nginx:
     build: ./nginx
     volumes:
-      - web-static:/code/static
+      - web-static:/code/staticfiles
+      - web-media:/code/mediafiles
     ports:
       - 80:80
     depends_on:
@@ -39,4 +41,5 @@ services:
 
 volumes:
   web-static:
+  web-media:
   pgdata:
