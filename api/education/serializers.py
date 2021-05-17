@@ -2,10 +2,13 @@ from rest_framework import serializers
 from drf_writable_nested import serializers as nested_serializers
 
 from education.models import (
+    Assignment,
     Course,
     Event,
+    Grade,
     NonPeriodicEventDetails,
     PeriodicEventDetails,
+    Solution,
     Timetable,
     EventType,
 )
@@ -51,8 +54,8 @@ class TimetableSerializer(serializers.HyperlinkedModelSerializer):
         queryset=Course.objects.all(),
     )
 
-    events = UUIDHyperlinkedRelatedField(
-        view_name='event-detail',
+    assignments = UUIDHyperlinkedRelatedField(
+        view_name='assignment-detail',
         read_only=True,
         many=True,
     )
@@ -61,13 +64,110 @@ class TimetableSerializer(serializers.HyperlinkedModelSerializer):
         model = Timetable
         fields = (
             'url', 'uuid', 'code', 'title', 'course', 'start_date', 'end_date',
-            'events',
+            'assignments',
         )
         extra_kwargs = {
             'url': {
                 'lookup_field': 'uuid',
             }
         }
+
+
+class TimetableItemSerializer(serializers.HyperlinkedModelSerializer):
+    timetable = UUIDHyperlinkedRelatedField(
+        view_name='timetable-detail',
+        queryset=Timetable.objects.all(),
+    )
+
+    instructor = UUIDHyperlinkedRelatedField(
+        view_name='instructor-detail',
+        queryset=InstructorProfile.objects.all(),
+    )
+
+    students = UUIDHyperlinkedRelatedField(
+        view_name='student-detail',
+        queryset=StudentProfile.objects.all(),
+        many=True,
+    )
+
+    class Meta:
+        abstract = True
+        fields = (
+            'url', 'uuid', 'title', 'description', 'start_time', 'end_time',
+            'timetable', 'instructor', 'students',
+        )
+
+
+class PeriodicTimetableItemSerializer(TimetableItemSerializer):
+    class Meta:
+        fields = TimetableItemSerializer.Meta.fields + (
+            'weekday', 'repeat_type',
+        )
+
+
+class NonPeriodicTimetableItemSerializer(TimetableItemSerializer):
+    class Meta:
+        fields = TimetableItemSerializer.Meta.fields + ('date',)
+
+
+class AssignmentSerializer(NonPeriodicTimetableItemSerializer):
+    solutions = UUIDHyperlinkedRelatedField(
+        view_name='assignment-detail',
+        read_only=True,
+        many=True,
+    )
+
+    class Meta:
+        model = Assignment
+        fields = NonPeriodicEventDetails.Meta.fields + ('solutions',)
+        extra_kwargs = {
+            'url': {
+                'lookup_field': 'uuid',
+            }
+        }
+
+
+class SolutionSerializer(serializers.HyperlinkedModelSerializer):
+    assignment = UUIDHyperlinkedRelatedField(
+        view_name='assignment-detail',
+        queryset=Assignment.object.all(),
+    )
+
+    student = UUIDHyperlinkedRelatedField(
+        view_name='student-detail',
+        queryset=StudentProfile.objects.all(),
+    )
+
+    grades = UUIDHyperlinkedRelatedField(
+        view_name='grade-detail',
+        read_only=True,
+        many=True,
+    )
+
+    class Meta:
+        model = Solution
+        fields = (
+            'url', 'uuid', 'assignment', 'student', 'created_at', 'comment',
+            'grades',
+        )
+
+
+class GradeSerializer(serializers.HyperlinkedModelSerializer):
+    solution = UUIDHyperlinkedRelatedField(
+        view_name='solution-detail',
+        queryset=Solution.objects.all(),
+    )
+
+    instructor = UUIDHyperlinkedRelatedField(
+        view_name='instructor-detail',
+        queryset=InstructorProfile.objects.all(),
+    )
+
+    class Meta:
+        model = Grade
+        fields = (
+            'url', 'uuid', 'solution', 'instructor', 'created_at', 'comment',
+        )
 
 
 class EventDetailsSerializer(serializers.ModelSerializer):
