@@ -1,10 +1,8 @@
 from django.db import models
-from django.db.models.deletion import SET_NULL
-from django.db.models.fields.related import ForeignKey
 from django.utils.translation import gettext_lazy as _
 
 from accounts.models import InstructorProfile, StudentProfile, StudentGroup
-from common.models import UUIDFieldMixin
+from common.models import Content, UUIDFieldMixin
 
 
 class Course(UUIDFieldMixin, models.Model):
@@ -142,6 +140,30 @@ class Grade(UUIDFieldMixin, models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     comment = models.TextField(blank=True)
+
+
+class CourseContent(Content):
+    course = models.ForeignKey(
+        Course,
+        on_delete=models.CASCADE,
+        related_name='contents',
+    )
+
+
+class AssignmentContent(Content):
+    assignment = models.ForeignKey(
+        Assignment,
+        on_delete=models.CASCADE,
+        related_name='contents',
+    )
+
+
+class SolutionContent(Content):
+    solution = models.ForeignKey(
+        Solution,
+        on_delete=models.CASCADE,
+        related_name='contents',
+    )
 
 
 class EventType(UUIDFieldMixin, models.Model):
