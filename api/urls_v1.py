@@ -10,7 +10,10 @@ from api.accounts.views import (
 )
 
 from api.education.views import (
+    AssignmentViewSet,
     CourseViewSet,
+    GradeViewSet,
+    SolutionViewSet,
     TimetableViewSet,
     EventTypeViewSet,
     EventViewSet,
@@ -32,6 +35,10 @@ router.register('student-groups', StudentGroupViewSet,
 
 router.register('courses', CourseViewSet, basename='course')
 router.register('timetables', TimetableViewSet, basename='timetable')
+router.register('assignments', AssignmentViewSet, basename='assignment')
+router.register('solutions', SolutionViewSet, basename='solution')
+router.register('grades', GradeViewSet, basename='grade')
+
 router.register('events', EventViewSet, basename='event')
 router.register('event-types', EventTypeViewSet, basename='event-type')
 

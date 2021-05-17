@@ -3,11 +3,14 @@ from django.db.models import Q
 
 from accounts.models import InstructorProfile, StudentProfile
 from education.models import (
+    Assignment,
     Course,
     Event,
     EventType,
+    Grade,
     NonPeriodicEventDetails,
     PeriodicEventDetails,
+    Solution,
     StudentGroup,
     Timetable,
 )
@@ -64,6 +67,142 @@ class TimetableFilter(filters.FilterSet):
             'code', 'title', 'course', 'course__code', 'course__title',
             'start_date', 'end_date',
         )
+
+
+class TimetableItemFilter(filters.FilterSet):
+    timetable = filters.ModelChoiceFilter(
+        label='Timetable',
+        field_name='uuid',
+        to_field_name='uuid',
+        queryset=Timetable.objects.all(),
+    )
+
+    instructor = filters.ModelChoiceFilter(
+        label='Instructor',
+        field_name='uuid',
+        to_field_name='uuid',
+        queryset=InstructorProfile.objects.all(),
+    )
+
+    students = filters.ModelMultipleChoiceFilter(
+        label='Students',
+        field_name='uuid',
+        to_field_name='uuid',
+        queryset=StudentProfile.objects.all(),
+    )
+
+    class Meta:
+        abstract = True
+        fields = (
+            'title', 'timetable', 'instructor', 'students', 'start_time',
+            'end_time',
+        )
+
+    @property
+    def qs(self):
+        parent = super().qs
+        user = getattr(self.request, 'user', None)
+
+        students = StudentProfile.objects.filter(user=user)
+        instructors = InstructorProfile.objects.filter(user=user)
+
+        if students:
+            student = students.first()
+            return parent.filter(students=student)
+        if instructors:
+            instructor = instructors.first()
+            return parent.filter(instructors=instructor)
+        return parent
+
+
+class PeriodicTimetableItemFilter(TimetableItemFilter):
+    class Meta:
+        abstract = True
+        fields = TimetableItemFilter.Meta.fields + ('weekday', 'repeat_type',)
+
+
+class NonPeriodicTimetableItemFilter(TimetableItemFilter):
+    class Meta:
+        abstract = True
+        fields = TimetableItemFilter.Meta.fields + ('date',)
+
+
+class AssignmentFilter(NonPeriodicTimetableItemFilter):
+    class Meta:
+        model = Assignment
+        fields = NonPeriodicTimetableItemFilter.Meta.fields + ()
+
+
+class SolutionFilter(filters.FilterSet):
+    assignment = filters.ModelChoiceFilter(
+        label='Assignment',
+        field_name='uuid',
+        to_field_name='uuid',
+        queryset=Assignment.objects.all(),
+    )
+
+    student = filters.ModelChoiceFilter(
+        label='Student',
+        field_name='uuid',
+        to_field_name='uuid',
+        queryset=StudentProfile.objects.all(),
+    )
+
+    class Meta:
+        model = Solution
+        fields = ('assignment', 'student', 'created_at',)
+
+    @property
+    def qs(self):
+        parent = super().qs
+        user = getattr(self.request, 'user', None)
+
+        students = StudentProfile.objects.filter(user=user)
+        instructors = InstructorProfile.objects.filter(user=user)
+
+        if students:
+            student = students.first()
+            return parent.filter(student=student)
+        if instructors:
+            instructor = instructors.first()
+            return parent.filter(assignment__instructor=instructor)
+        return parent
+
+
+class GradeFilter(filters.FilterSet):
+    solution = filters.ModelChoiceFilter(
+        label='Solution',
+        field_name='uuid',
+        to_field_name='uuid',
+        queryset=Solution.objects.all(),
+    )
+
+    instructor = filters.ModelChoiceFilter(
+        label='Instructor',
+        field_name='uuid',
+        to_field_name='uuid',
+        queryset=InstructorProfile.objects.all(),
+    )
+
+    class Meta:
+        model = Grade
+        fields = ('solution', 'instructor', 'created_at',)
+
+    @property
+    def qs(self):
+        parent = super().qs
+        user = getattr(self.request, 'user', None)
+
+        students = StudentProfile.objects.filter(user=user)
+        instructors = InstructorProfile.objects.filter(user=user)
+
+        if students:
+            student = students.first()
+            return parent.filter(solution__student=student)
+        if instructors:
+            instructor = instructors.first()
+            return parent.filter(instructor=instructor)
+        return parent
 
 
 class EventFilter(filters.FilterSet):
