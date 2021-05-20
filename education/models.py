@@ -127,6 +127,7 @@ class Solution(UUIDFieldMixin, models.Model):
 
 class Grade(UUIDFieldMixin, models.Model):
     """Represent a response to the student's solution."""
+    value = models.PositiveSmallIntegerField(default=0)
     solution = models.OneToOneField(
         Solution,
         related_name='grades',

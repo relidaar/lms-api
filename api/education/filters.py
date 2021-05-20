@@ -186,7 +186,7 @@ class GradeFilter(filters.FilterSet):
 
     class Meta:
         model = Grade
-        fields = ('solution', 'instructor', 'created_at',)
+        fields = ('value', 'solution', 'instructor', 'created_at',)
 
     @property
     def qs(self):

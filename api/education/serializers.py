@@ -198,7 +198,8 @@ class GradeSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Grade
         fields = (
-            'url', 'uuid', 'solution', 'instructor', 'created_at', 'comment',
+            'url', 'uuid', 'value', 'solution', 'instructor', 'created_at',
+            'comment',
         )
 
 
