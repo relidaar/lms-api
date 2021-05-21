@@ -23,21 +23,18 @@ class CourseContentSerializer(ContentSerializer):
     class Meta:
         model = CourseContent
         fields = ContentSerializer.Meta.fields + ()
-        extra_kwargs = ContentSerializer.Meta.extra_kwargs
 
 
 class AssignmentContentSerializer(ContentSerializer):
     class Meta:
         model = AssignmentContent
         fields = ContentSerializer.Meta.fields + ()
-        extra_kwargs = ContentSerializer.Meta.extra_kwargs
 
 
 class SolutionContentSerializer(ContentSerializer):
     class Meta:
         model = SolutionContent
         fields = ContentSerializer.Meta.fields + ()
-        extra_kwargs = ContentSerializer.Meta.extra_kwargs
 
 
 class CourseSerializer(serializers.HyperlinkedModelSerializer):
@@ -59,7 +56,7 @@ class CourseSerializer(serializers.HyperlinkedModelSerializer):
         many=True,
     )
 
-    contents = ContentSerializer(many=True,)
+    contents = CourseContentSerializer(many=True,)
 
     class Meta:
         model = Course
