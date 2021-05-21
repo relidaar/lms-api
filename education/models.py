@@ -46,7 +46,7 @@ class TimetableItem(UUIDFieldMixin, models.Model):
     timetable = models.ForeignKey(
         Timetable,
         on_delete=models.CASCADE,
-        related_name='%(class)s',
+        related_name='%(class)ss',
     )
     start_time = models.TimeField(verbose_name='Course event start time')
     end_time = models.TimeField(verbose_name='Course event end time')
@@ -54,9 +54,9 @@ class TimetableItem(UUIDFieldMixin, models.Model):
         InstructorProfile,
         on_delete=models.SET_NULL,
         null=True,
-        related_name='%(class)s',
+        related_name='%(class)ss',
     )
-    students = models.ManyToManyField(StudentProfile, related_name='%(class)s')
+    students = models.ManyToManyField(StudentProfile, related_name='%(class)ss')
 
     class Meta:
         abstract = True
@@ -203,28 +203,14 @@ class EventDetails(UUIDFieldMixin, models.Model):
 
 class PeriodicEventDetails(EventDetails):
     """Represent details for periodic course events."""
-    class WeekDay(models.TextChoices):
-        Monday = 'MO', _('Monday')
-        Tuesday = 'TU', _('Tuesday')
-        Wednesday = 'WE', _('Wednesday')
-        Thursday = 'TH', _('Thursday')
-        Friday = 'FR', _('Friday')
-        Saturday = 'SA', _('Saturday')
-        Sunday = 'SU', _('Sunday')
-
-    class RepeatType(models.TextChoices):
-        Weekly = 'W', _('Weekly')
-        Even = 'E', _('Even')
-        Odd = 'O', _('Odd')
-
     weekday = models.CharField(
-        choices=WeekDay.choices,
-        default=WeekDay.Monday,
+        choices=PeriodicTimetableItem.WeekDay.choices,
+        default=PeriodicTimetableItem.WeekDay.Monday,
         max_length=2,
     )
     repeat_type = models.CharField(
-        choices=RepeatType.choices,
-        default=RepeatType.Weekly,
+        choices=PeriodicTimetableItem.RepeatType.choices,
+        default=PeriodicTimetableItem.RepeatType.Weekly,
         max_length=1,
     )
     event = models.ForeignKey(
