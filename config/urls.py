@@ -17,5 +17,4 @@ from django.urls import path, include
 
 urlpatterns = [
     path('api/', include('api.urls')),
-    path('silk/', include('silk.urls'), name='silk'),
 ]

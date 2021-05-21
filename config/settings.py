@@ -38,7 +38,6 @@ ALLOWED_HOSTS = env('ALLOWED_HOSTS', default='*').split()
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
 MIDDLEWARE = [
-    'silk.middleware.SilkyMiddleware',
     'corsheaders.middleware.CorsMiddleware',
 
     'django.middleware.security.SecurityMiddleware',
@@ -70,7 +69,6 @@ INSTALLED_APPS = [
     'django_filters',
     'crispy_forms',
     'generic_relations',
-    'silk',
     'corsheaders',
 
     'common.apps.CommonConfig',
@@ -178,14 +176,9 @@ REST_AUTH_SERIALIZERS = {
     'USER_DETAILS_SERIALIZER': 'api.accounts.serializers.UserSerializer',
 }
 
-LOGIN_URL = '/api/v1/auth/login/'
-
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
-
-SILKY_AUTHENTICATION = True
-SILKY_AUTHORISATION = True
 
 CORS_ORIGIN_ALLOW_ALL = True
