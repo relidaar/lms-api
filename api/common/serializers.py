@@ -1,7 +1,6 @@
 from generic_relations.relations import GenericRelatedField
 from rest_framework import serializers
 
-
 from common.models import (
     FileContentItem,
     ImageContentItem,

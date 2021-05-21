@@ -1,6 +1,8 @@
-from rest_framework import serializers
 from drf_writable_nested import serializers as nested_serializers
+from rest_framework import serializers
 
+from accounts.models import InstructorProfile, StudentProfile, StudentGroup
+from api.common.serializers import ContentSerializer, UUIDHyperlinkedRelatedField
 from education.models import (
     Assignment,
     AssignmentContent,
@@ -15,8 +17,6 @@ from education.models import (
     Timetable,
     EventType,
 )
-from accounts.models import InstructorProfile, StudentProfile, StudentGroup
-from api.common.serializers import ContentSerializer, UUIDHyperlinkedRelatedField
 
 
 class CourseContentSerializer(ContentSerializer):
@@ -56,7 +56,7 @@ class CourseSerializer(serializers.HyperlinkedModelSerializer):
         many=True,
     )
 
-    contents = CourseContentSerializer(many=True,)
+    contents = CourseContentSerializer(many=True, required=False, )
 
     class Meta:
         model = Course
@@ -140,7 +140,7 @@ class AssignmentSerializer(NonPeriodicTimetableItemSerializer):
         many=True,
     )
 
-    contents = AssignmentContentSerializer(many=True,)
+    contents = AssignmentContentSerializer(many=True, )
 
     class Meta:
         model = Assignment
@@ -171,7 +171,7 @@ class SolutionSerializer(serializers.HyperlinkedModelSerializer):
         many=True,
     )
 
-    contents = SolutionContentSerializer(many=True,)
+    contents = SolutionContentSerializer(many=True, )
 
     class Meta:
         model = Solution
@@ -231,14 +231,15 @@ class NonPeriodicEventDetailsSerializer(EventDetailsSerializer):
         fields = EventDetailsSerializer.Meta.fields + ('date',)
 
 
-class EventSerializer(serializers.HyperlinkedModelSerializer, nested_serializers.NestedCreateMixin, nested_serializers.NestedUpdateMixin):
+class EventSerializer(serializers.HyperlinkedModelSerializer, nested_serializers.NestedCreateMixin,
+                      nested_serializers.NestedUpdateMixin):
     event_type = UUIDHyperlinkedRelatedField(
         view_name='event-type-detail',
         queryset=EventType.objects.all(),
     )
 
-    periodic_event_details = PeriodicEventDetailsSerializer(many=True,)
-    non_periodic_event_details = NonPeriodicEventDetailsSerializer(many=True,)
+    periodic_event_details = PeriodicEventDetailsSerializer(many=True, )
+    non_periodic_event_details = NonPeriodicEventDetailsSerializer(many=True, )
 
     timetable = UUIDHyperlinkedRelatedField(
         view_name='timetable-detail',

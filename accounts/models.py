@@ -63,6 +63,7 @@ class UserProfile(UUIDFieldMixin, models.Model):
 
 class InstructorProfile(UserProfile):
     """Model for instructor profiles."""
+
     class Meta:
         verbose_name = _('instructor')
         verbose_name_plural = _('instructors')
@@ -70,6 +71,7 @@ class InstructorProfile(UserProfile):
 
 class StudentProfile(UserProfile):
     """Model for student profiles."""
+
     class Meta:
         verbose_name = _('student')
         verbose_name_plural = _('students')

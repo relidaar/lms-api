@@ -1,5 +1,5 @@
-from django_filters import rest_framework as filters
 from django.db.models import Q
+from django_filters import rest_framework as filters
 
 from accounts.models import InstructorProfile, StudentProfile
 from education.models import (

@@ -2,8 +2,8 @@ from django.contrib.auth import get_user_model
 from generic_relations.relations import GenericRelatedField
 from rest_framework import serializers
 
-from api.common.serializers import UUIDHyperlinkedRelatedField
 from accounts.models import StudentGroup
+from api.common.serializers import UUIDHyperlinkedRelatedField
 from education.models import (
     Course,
     Event,

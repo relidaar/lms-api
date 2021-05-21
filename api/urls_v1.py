@@ -8,7 +8,6 @@ from api.accounts.views import (
     InstructorProfileViewSet,
     StudentGroupViewSet,
 )
-
 from api.education.views import (
     AssignmentViewSet,
     CourseViewSet,
@@ -18,7 +17,6 @@ from api.education.views import (
     EventTypeViewSet,
     EventViewSet,
 )
-
 from api.management.views import RequestViewSet, ResponseViewSet
 
 router = DefaultRouter()

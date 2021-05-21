@@ -64,6 +64,7 @@ class TimetableItem(UUIDFieldMixin, models.Model):
 
 class PeriodicTimetableItem(TimetableItem):
     """Basic model for periodic timetable items."""
+
     class WeekDay(models.TextChoices):
         Monday = 'MO', _('Monday')
         Tuesday = 'TU', _('Tuesday')

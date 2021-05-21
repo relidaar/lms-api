@@ -21,6 +21,7 @@ class CustomLoginSerializer(LoginSerializer):
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     """Custom serializer for user model."""
+
     class Meta:
         model = get_user_model()
         fields = (
@@ -48,6 +49,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
 class UserUpdateSerializer(serializers.HyperlinkedModelSerializer):
     """Custom update serializer for user model."""
+
     class Meta:
         model = get_user_model()
         fields = ('url', 'uuid', 'full_name', 'email', 'groups',)
@@ -102,6 +104,7 @@ class UserProfileSerializer(serializers.HyperlinkedModelSerializer):
 
 class StudentProfileSerializer(UserProfileSerializer):
     """Custom serializer for student profile model."""
+
     class Meta:
         model = StudentProfile
         fields = UserProfileSerializer.Meta.fields + ()
@@ -115,6 +118,7 @@ class StudentProfileSerializer(UserProfileSerializer):
 
 class InstructorProfileSerializer(UserProfileSerializer):
     """Custom serializer for instructor profile model."""
+
     class Meta:
         model = InstructorProfile
         fields = UserProfileSerializer.Meta.fields + ()

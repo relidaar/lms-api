@@ -1,16 +1,9 @@
-from rest_framework import viewsets, mixins
 from django_auto_prefetching import AutoPrefetchViewSetMixin
+from rest_framework import viewsets
 
 from api.common.views import MultiSerializerMixin, UUIDLookupFieldMixin
-from education.models import (
-    Assignment,
-    Course,
-    Event,
-    Grade,
-    Solution,
-    Timetable,
-    EventType,
-)
+from api.education.filters import AssignmentFilter, CourseFilter, EventFilter, GradeFilter, SolutionFilter, \
+    TimetableFilter
 from api.education.serializers import (
     AssignmentSerializer,
     EventSerializer,
@@ -20,7 +13,15 @@ from api.education.serializers import (
     SolutionSerializer,
     TimetableSerializer,
 )
-from api.education.filters import AssignmentFilter, CourseFilter, EventFilter, GradeFilter, SolutionFilter, TimetableFilter
+from education.models import (
+    Assignment,
+    Course,
+    Event,
+    Grade,
+    Solution,
+    Timetable,
+    EventType,
+)
 
 
 class CourseViewSet(viewsets.ModelViewSet, MultiSerializerMixin, UUIDLookupFieldMixin, AutoPrefetchViewSetMixin):
