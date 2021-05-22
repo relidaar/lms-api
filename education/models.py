@@ -131,7 +131,7 @@ class Grade(UUIDFieldMixin, models.Model):
     value = models.PositiveSmallIntegerField(default=0)
     solution = models.OneToOneField(
         Solution,
-        related_name='grades',
+        related_name='grade',
         on_delete=models.CASCADE,
     )
     instructor = models.ForeignKey(

@@ -165,7 +165,7 @@ class SolutionSerializer(serializers.HyperlinkedModelSerializer):
         queryset=StudentProfile.objects.all(),
     )
 
-    grades = UUIDHyperlinkedRelatedField(
+    grade = UUIDHyperlinkedRelatedField(
         view_name='grade-detail',
         read_only=True,
         many=True,
@@ -177,8 +177,13 @@ class SolutionSerializer(serializers.HyperlinkedModelSerializer):
         model = Solution
         fields = (
             'url', 'uuid', 'assignment', 'student', 'created_at', 'comment',
-            'grades', 'contents',
+            'grade', 'contents',
         )
+        extra_kwargs = {
+            'url': {
+                'lookup_field': 'uuid',
+            }
+        }
 
 
 class GradeSerializer(serializers.HyperlinkedModelSerializer):
@@ -198,6 +203,11 @@ class GradeSerializer(serializers.HyperlinkedModelSerializer):
             'url', 'uuid', 'value', 'solution', 'instructor', 'created_at',
             'comment',
         )
+        extra_kwargs = {
+            'url': {
+                'lookup_field': 'uuid',
+            }
+        }
 
 
 class EventDetailsSerializer(serializers.ModelSerializer):
