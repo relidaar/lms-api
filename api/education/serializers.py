@@ -140,7 +140,7 @@ class AssignmentSerializer(NonPeriodicTimetableItemSerializer):
         many=True,
     )
 
-    contents = AssignmentContentSerializer(many=True, )
+    contents = AssignmentContentSerializer(many=True, required=False,)
 
     class Meta:
         model = Assignment
@@ -168,10 +168,9 @@ class SolutionSerializer(serializers.HyperlinkedModelSerializer):
     grade = UUIDHyperlinkedRelatedField(
         view_name='grade-detail',
         read_only=True,
-        many=True,
     )
 
-    contents = SolutionContentSerializer(many=True, )
+    contents = SolutionContentSerializer(many=True, required=False,)
 
     class Meta:
         model = Solution
@@ -248,8 +247,8 @@ class EventSerializer(serializers.HyperlinkedModelSerializer, nested_serializers
         queryset=EventType.objects.all(),
     )
 
-    periodic_event_details = PeriodicEventDetailsSerializer(many=True, )
-    non_periodic_event_details = NonPeriodicEventDetailsSerializer(many=True, )
+    periodic_event_details = PeriodicEventDetailsSerializer(many=True, required=False,)
+    non_periodic_event_details = NonPeriodicEventDetailsSerializer(many=True, required=False,)
 
     timetable = UUIDHyperlinkedRelatedField(
         view_name='timetable-detail',

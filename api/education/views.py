@@ -57,7 +57,6 @@ class SolutionViewSet(viewsets.ModelViewSet, MultiSerializerMixin, UUIDLookupFie
         'default': SolutionSerializer,
     }
     filterset_class = SolutionFilter
-    search_fields = ('title',)
 
 
 class GradeViewSet(viewsets.ModelViewSet, MultiSerializerMixin, UUIDLookupFieldMixin):
@@ -66,7 +65,6 @@ class GradeViewSet(viewsets.ModelViewSet, MultiSerializerMixin, UUIDLookupFieldM
         'default': GradeSerializer,
     }
     filterset_class = GradeFilter
-    search_fields = ('title',)
 
 
 class EventViewSet(viewsets.ModelViewSet, MultiSerializerMixin, UUIDLookupFieldMixin, AutoPrefetchViewSetMixin):
