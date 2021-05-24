@@ -147,6 +147,8 @@ MEDIA_FOLDER_NAME = 'mediafiles'
 MEDIA_URL = f'/{MEDIA_FOLDER_NAME}/'
 MEDIA_ROOT = os.path.join(BASE_DIR, MEDIA_FOLDER_NAME)
 
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     'DEFAULT_PERMISSION_CLASSES': [
