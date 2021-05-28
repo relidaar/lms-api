@@ -14,7 +14,7 @@ from api.urls_v1 import router as api_v1
 from api.views import ApiRootView
 
 urlpatterns = [
-    path('', ApiRootView.as_view()),
+    path('', ApiRootView.as_view(), name='api_root'),
 
     path('v1/', include(api_v1.urls)),
 
