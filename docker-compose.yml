@@ -1,0 +1,44 @@
+version: "3.9"
+
+services:
+  web:
+    build: .
+    command: >
+      sh -c "python manage.py collectstatic --noinput &&
+             python manage.py migrate &&
+             gunicorn config.wsgi:application -b :8000"
+    expose:
+      - 8000
+    env_file:
+      - .env.dev
+    depends_on:
+      - db
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.django.rule=Host(`${DOMAIN_NAME:-localhost}`)"
+
+  traefik:
+    image: traefik:v2.4
+    ports:
+      - 8008:80
+      - 8081:8080
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./traefik.dev.toml:/traefik.toml
+
+  db:
+    image: postgres:13-alpine
+    volumes:
+      - pgdata:/var/lib/postgresql/data/
+    expose:
+      - 5432
+    env_file:
+      - .env.dev
+
+  redis:
+    image: redis:alpine
+    ports:
+      - 6379:6379
+
+volumes:
+  pgdata:

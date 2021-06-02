@@ -62,6 +62,8 @@ cover/
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
+static/
+staticfiles/
 
 # Flask stuff:
 instance/
@@ -108,6 +110,7 @@ celerybeat.pid
 
 # Environments
 .env
+.env.db
 .venv
 env/
 venv/
@@ -140,6 +143,7 @@ dmypy.json
 cython_debug/
 
 ### VisualStudioCode template
+.vscode
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
@@ -225,3 +229,4 @@ fabric.properties
 # Android studio 3.1+ serialized cache file
 .idea/caches/build_file_checksums.ser
 
+.python-version
