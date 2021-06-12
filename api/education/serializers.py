@@ -83,11 +83,17 @@ class TimetableSerializer(serializers.HyperlinkedModelSerializer):
         many=True,
     )
 
+    events = UUIDHyperlinkedRelatedField(
+        view_name='event-detail',
+        read_only=True,
+        many=True,
+    )
+
     class Meta:
         model = Timetable
         fields = (
             'url', 'uuid', 'code', 'title', 'course', 'start_date', 'end_date',
-            'assignments',
+            'assignments', 'events',
         )
         extra_kwargs = {
             'url': {
@@ -247,8 +253,10 @@ class EventSerializer(serializers.HyperlinkedModelSerializer, nested_serializers
         queryset=EventType.objects.all(),
     )
 
-    periodic_event_details = PeriodicEventDetailsSerializer(many=True, required=False,)
-    non_periodic_event_details = NonPeriodicEventDetailsSerializer(many=True, required=False,)
+    periodic_event_details = PeriodicEventDetailsSerializer(
+        many=True, required=False,)
+    non_periodic_event_details = NonPeriodicEventDetailsSerializer(
+        many=True, required=False,)
 
     timetable = UUIDHyperlinkedRelatedField(
         view_name='timetable-detail',

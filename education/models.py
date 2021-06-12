@@ -56,7 +56,10 @@ class TimetableItem(UUIDFieldMixin, models.Model):
         null=True,
         related_name='%(class)ss',
     )
-    students = models.ManyToManyField(StudentProfile, related_name='%(class)ss')
+    students = models.ManyToManyField(
+        StudentProfile,
+        related_name='%(class)ss',
+    )
 
     class Meta:
         abstract = True
@@ -181,7 +184,11 @@ class Event(UUIDFieldMixin, models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True)
     event_type = models.ForeignKey(EventType, on_delete=models.CASCADE)
-    timetable = models.ForeignKey(Timetable, on_delete=models.CASCADE)
+    timetable = models.ForeignKey(
+        Timetable,
+        on_delete=models.CASCADE,
+        related_name='events'
+    )
 
     def __str__(self):
         return f'{self.title} ({self.event_type.title})'
