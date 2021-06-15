@@ -50,7 +50,11 @@ class CustomUser(AbstractBaseUser, PermissionsMixin, UUIDFieldMixin):
 
 class UserProfile(UUIDFieldMixin, models.Model):
     """Basic model for user profiles."""
-    user = models.OneToOneField(CustomUser, on_delete=CASCADE)
+    user = models.OneToOneField(
+        CustomUser,
+        on_delete=CASCADE,
+        related_name='%(class)s'
+    )
     created_date = models.DateTimeField(default=timezone.now, editable=False)
     modified_date = models.DateTimeField(default=timezone.now, editable=False)
 
@@ -80,7 +84,12 @@ class StudentProfile(UserProfile):
 class StudentGroup(UUIDFieldMixin, models.Model):
     """Represent an academic group of students."""
     code = models.CharField(max_length=10, unique=True)
-    students = models.ManyToManyField(StudentProfile, related_name='groups')
+    students = models.ManyToManyField(
+        StudentProfile,
+        related_name='student_groups',
+    )
+    title = models.CharField(max_length=255, default='',)
+    year_of_admission = models.PositiveSmallIntegerField(default=0)
 
     def __str__(self):
         return self.code

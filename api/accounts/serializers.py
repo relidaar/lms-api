@@ -105,9 +105,16 @@ class UserProfileSerializer(serializers.HyperlinkedModelSerializer):
 class StudentProfileSerializer(UserProfileSerializer):
     """Custom serializer for student profile model."""
 
+    student_groups = UUIDHyperlinkedRelatedField(
+        view_name='student-group-detail',
+        read_only=True,
+    )
+
     class Meta:
         model = StudentProfile
-        fields = UserProfileSerializer.Meta.fields + ()
+        fields = UserProfileSerializer.Meta.fields + (
+            'student_groups',
+        )
         extra_kwargs = {
             'url': {
                 'view_name': 'student-detail',
@@ -139,7 +146,9 @@ class StudentGroupSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = StudentGroup
-        fields = ('url', 'uuid', 'code', 'students',)
+        fields = (
+            'url', 'uuid', 'code', 'title',
+            'year_of_admission', 'students',)
         extra_kwargs = {
             'url': {
                 'view_name': 'student-group-detail',
