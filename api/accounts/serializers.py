@@ -107,6 +107,7 @@ class StudentProfileSerializer(UserProfileSerializer):
 
     student_groups = UUIDHyperlinkedRelatedField(
         view_name='student-group-detail',
+        many=True,
         read_only=True,
     )
 
