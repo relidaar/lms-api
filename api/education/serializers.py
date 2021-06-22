@@ -141,7 +141,7 @@ class NonPeriodicTimetableItemSerializer(TimetableItemSerializer):
 
 class AssignmentSerializer(NonPeriodicTimetableItemSerializer):
     solutions = UUIDHyperlinkedRelatedField(
-        view_name='assignment-detail',
+        view_name='solution-detail',
         read_only=True,
         many=True,
     )
