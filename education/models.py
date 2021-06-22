@@ -128,6 +128,9 @@ class Solution(UUIDFieldMixin, models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     comment = models.TextField(blank=True)
 
+    def __str__(self) -> str:
+        return f"{self.assignment.title} ({self.student.user.full_name})"
+
 
 class Grade(UUIDFieldMixin, models.Model):
     """Represent a response to the student's solution."""
