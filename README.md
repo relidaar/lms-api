@@ -147,7 +147,7 @@ Distributed under the MIT License. See  [`LICENSE`][license-url] for more inform
 ## Contact
 [(Back to top)](#table-of-contents)
 
-Oleksandr Sviatetskyi - alex.sviatetskyi@gmail.com
+Oleksandr Sviatetskyi - alex.sviatetskyi@outlook.com
 
 Project Link: [https://github.com/relidaar/lms-api][project-link]
 
