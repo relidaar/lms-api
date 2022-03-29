@@ -1,10 +1,5 @@
 # Simple Learning Management System API
 
-[![Contributors][contributors-shield]][contributors-url]
-[![Forks][forks-shield]][forks-url]
-[![Issues][issues-shield]][issues-url]
-[![MIT License][license-shield]][license-url]
-
 [Report Bug][project-issues-link]
 ·
 [Request Feature][project-issues-link]
@@ -39,7 +34,7 @@
 
 1. Clone the repo
    ```sh
-   git clone https://github.com/relidaar/lms-api.git
+   git clone https://gitlab.com/relidaar/lms-api.git
    ```
 2. Change your directory
    ```sh
@@ -68,7 +63,7 @@
 
 1. Clone the repo
    ```sh
-   git clone https://github.com/relidaar/lms-api.git
+   git clone https://gitlab.com/relidaar/lms-api.git
    ```
 2. Change your directory
    ```sh
@@ -90,7 +85,7 @@
 
 1. Clone the repo
    ```sh
-   git clone https://github.com/relidaar/lms-api.git
+   git clone https://gitlab.com/relidaar/lms-api.git
    ```
 2. Change your directory
    ```sh
@@ -147,28 +142,18 @@ Distributed under the MIT License. See  [`LICENSE`][license-url] for more inform
 ## Contact
 [(Back to top)](#table-of-contents)
 
-Oleksandr Sviatetskyi - alex.sviatetskyi@outlook.com
+Oleksandr Sviatetskyi - alex.sviatetskyi@icloud.com
 
-Project Link: [https://github.com/relidaar/lms-api][project-link]
+Project Link: [https://gitlab.com/relidaar/lms-api][project-link]
 
 [![LinkedIn][linkedin-shield]][linkedin-url]
 
 
 
-[project-link]: https://github.com/relidaar/lms-api
-[project-issues-link]: https://github.com/relidaar/lms-api/issues
+[project-link]: https://gitlab.com/relidaar/lms-api
+[project-issues-link]: https://gitlab.com/relidaar/lms-api/-/issues
 
-[contributors-shield]: https://img.shields.io/github/contributors/relidaar/lms-api?style=for-the-badge
-[contributors-url]: https://github.com/relidaar/lms-api/graphs/contributors
-
-[forks-shield]: https://img.shields.io/github/forks/relidaar/lms-api?style=for-the-badge
-[forks-url]: https://github.com/relidaar/lms-api/network/members
-
-[issues-shield]: https://img.shields.io/github/issues/relidaar/lms-api?style=for-the-badge
-[issues-url]: https://github.com/relidaar/lms-api/issues
-
-[license-shield]: https://img.shields.io/github/license/relidaar/lms-api?style=for-the-badge
-[license-url]: https://github.com/relidaar/lms-api/blob/main/LICENSE
+[license-url]: https://gitlab.com/relidaar/lms-api/blob/main/LICENSE
 
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://www.linkedin.com/in/oleksandr-sviatetskyi-45424b143/
